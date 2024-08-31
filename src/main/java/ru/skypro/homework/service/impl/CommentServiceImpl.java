@@ -1,6 +1,7 @@
 package ru.skypro.homework.service.impl;
 
 import org.springframework.stereotype.Service;
+import ru.skypro.homework.dto.CreateOrUpdateCommentDTO;
 import ru.skypro.homework.entity.Comment;
 import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.service.CommentService;
@@ -20,7 +21,7 @@ public class CommentServiceImpl implements CommentService {
         return null;
     }
 
-    public Comment createComment(Comment comment) {
+    public Comment createComment(Integer adId, CreateOrUpdateCommentDTO comment) {
         return null;
     }
 
