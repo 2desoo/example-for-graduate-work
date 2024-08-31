@@ -8,11 +8,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.skypro.homework.dto.Login;
-import ru.skypro.homework.dto.Register;
+import ru.skypro.homework.dto.LoginDTO;
+import ru.skypro.homework.dto.RegisterDTO;
 import ru.skypro.homework.service.AuthService;
-
-import java.util.logging.Logger;
 
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
@@ -21,12 +19,10 @@ import java.util.logging.Logger;
 public class AuthController {
 
     private final AuthService authService;
-    private final Logger logger = Logger.getLogger(AuthController.class.getName());
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Login login) {
-        logger.info(login.getUsername());
-        if (authService.login(login.getUsername(), login.getPassword())) {
+    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
+        if (authService.login(loginDTO.getUsername(), loginDTO.getPassword())) {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -34,9 +30,8 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody Register register) {
-        logger.info(register.getUsername());
-        if (authService.register(register)) {
+    public ResponseEntity<?> register(@RequestBody RegisterDTO registerDTO) {
+        if (authService.register(registerDTO)) {
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

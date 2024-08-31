@@ -22,6 +22,6 @@ public class User {
     String firstName;
     String lastName;
     String phone;
-    String role;
+    Role role;
     String image;
 }
