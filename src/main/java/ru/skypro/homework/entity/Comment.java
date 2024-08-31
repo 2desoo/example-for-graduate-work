@@ -1,35 +1,36 @@
-package ru.skypro.homework.dto;
+package ru.skypro.homework.entity;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.experimental.FieldDefaults;
+import lombok.NoArgsConstructor;
 
 
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.Objects;
 
 /**
- *Комментарий DTO
+ *Комментарий
  */
+@Entity(name = "comment")
 @Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class CommentDTO {
+public class Comment {
 
     @Schema(description = "Id автора комментария")
-    Integer author;
+    private Integer author;
     @Schema(description = "Ссылка на аватар автора комментария")
-    String authorImage;
+    private String authorImage;
     @Schema(description = "Имя создателя комментария")
-    String authorFirstName;
+    private String authorFirstName;
     @Schema(description = "Дата и время создания комментария в миллисекундах с 00:00:00 01.01.1970")
-    Integer createdAt;
+    private Integer createdAt;
     @Schema(description = "Id комментария")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer pk;
+    private Integer pk;
     @Schema(description = "Текст комментария")
-    String text;
+    private String text;
 }
