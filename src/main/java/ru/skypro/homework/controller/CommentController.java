@@ -27,10 +27,6 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    /**
-     * @param id
-     * @return
-     */
     @Operation(
             tags = "Комментарии",
             description = "Получение комментариев объявления",
