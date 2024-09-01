@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Encoding;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -14,11 +15,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.homework.dto.Ad;
-import ru.skypro.homework.dto.Ads;
-import ru.skypro.homework.dto.CreateOrUpdateAd;
-import ru.skypro.homework.dto.ExtendedAd;
+import ru.skypro.homework.dto.AdDTO;
+import ru.skypro.homework.dto.AdsDTO;
+import ru.skypro.homework.dto.CreateOrUpdateAdDTO;
+import ru.skypro.homework.dto.ExtendedAdDTO;
 import ru.skypro.homework.service.impl.AdServiceImpl;
+import ru.skypro.homework.utils.MethodLog;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,6 +28,7 @@ import java.util.List;
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
+@Tag(name = "Объявления", description = "Контроллер для работы с объявлениями")
 @RequiredArgsConstructor
 @RequestMapping("/ads")
 public class AdsController {
@@ -39,12 +42,13 @@ public class AdsController {
                     responseCode = "200", description = "OK",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = Ads.class)
+                            schema = @Schema(implementation = AdsDTO.class)
                     )
             )})
     @GetMapping()
     public ResponseEntity<?> getAllAds() {
-        return ResponseEntity.ok(List.of(new Ads()));
+        log.info("Использован метод {}", MethodLog.getMethodName());
+        return ResponseEntity.ok(List.of(new AdsDTO()));
     }
 
     @Operation(
@@ -63,15 +67,16 @@ public class AdsController {
             responses = {@ApiResponse(responseCode = "201", description = "Created", content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(
-                            implementation = Ad.class
+                            implementation = AdDTO.class
                     )
             )),
                     @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
             }
     )
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> addAd(@RequestPart(name = "properties")CreateOrUpdateAd properties,
+    public ResponseEntity<?> addAd(@RequestPart(name = "properties") CreateOrUpdateAdDTO properties,
                                    @RequestPart(name = "image") MultipartFile image){
+        log.info("Использован метод {}", MethodLog.getMethodName());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -82,7 +87,7 @@ public class AdsController {
             responses = {@ApiResponse(responseCode = "200", description = "Created", content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(
-                            implementation = ExtendedAd.class
+                            implementation = ExtendedAdDTO.class
                     )
 
             )),
@@ -92,7 +97,8 @@ public class AdsController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<?> getAds(@PathVariable Integer id) {
-        return ResponseEntity.ok(new ExtendedAd());
+        log.info("Использован метод {}", MethodLog.getMethodName());
+        return ResponseEntity.ok(new ExtendedAdDTO());
     }
 
     @Operation(
@@ -101,7 +107,7 @@ public class AdsController {
             responses = {
                     @ApiResponse(
                             content = @Content(
-                                    schema = @Schema(implementation = Ad.class)
+                                    schema = @Schema(implementation = AdDTO.class)
                             )
                     ),
                     @ApiResponse(
@@ -116,10 +122,7 @@ public class AdsController {
     )
     @DeleteMapping("/{id}")
     public ResponseEntity<?> removeAd(@PathVariable Integer id) {
-        if (!adService.existsById(id)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        adService.deleteAd(id);
+        log.info("Использован метод {}", MethodLog.getMethodName());
         return ResponseEntity.noContent().build();
     }
 
@@ -128,7 +131,7 @@ public class AdsController {
             summary = "Обновление информации об объявлении",
             responses = {@ApiResponse(responseCode = "200", description = "OK", content = @Content(
                     schema = @Schema(
-                            implementation = Ad.class
+                            implementation = AdDTO.class
                     )
 
             )),
@@ -139,12 +142,9 @@ public class AdsController {
     )
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateAds(@PathVariable Integer id,
-                                       @RequestBody CreateOrUpdateAd createOrUpdateAd) {
-        if (!adService.existsById(id)) {
-            return new ResponseEntity<>(new CreateOrUpdateAd(), HttpStatus.NOT_FOUND);
-        }
-
-        return ResponseEntity.ok(adService.updateAd(id, createOrUpdateAd));
+                                       @RequestBody CreateOrUpdateAdDTO createOrUpdateAdDTO) {
+        log.info("Использован метод {}", MethodLog.getMethodName());
+        return ResponseEntity.ok(new AdDTO());
     }
 
     @Operation(
@@ -153,7 +153,7 @@ public class AdsController {
             responses = {@ApiResponse(responseCode = "200", description = "OK", content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(
-                            implementation = Ads.class
+                            implementation = AdsDTO.class
                     )
             )),
                     @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
@@ -162,7 +162,8 @@ public class AdsController {
 
     @GetMapping("/me")
     public ResponseEntity<?> getAdsMe() {
-        return ResponseEntity.ok(new Ads());
+        log.info("Использован метод {}", MethodLog.getMethodName());
+        return ResponseEntity.ok(new AdsDTO());
     }
 
     @Operation(
@@ -185,6 +186,7 @@ public class AdsController {
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateImage(@PathVariable Integer id,
                                          @RequestBody MultipartFile image) throws IOException {
+        log.info("Использован метод {}", MethodLog.getMethodName());
         byte[] imageBytes = image.getBytes();
 
         return ResponseEntity.ok()
