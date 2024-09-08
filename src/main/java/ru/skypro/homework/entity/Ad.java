@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -14,11 +15,17 @@ import javax.persistence.*;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "ad")
-public class AdEntity {
+public class Ad {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     Integer price;
     String title;
+    String description;
+    String image;
+    @ManyToOne
+    User user;
+    @OneToMany
+    List<Comment> comments;
 }
