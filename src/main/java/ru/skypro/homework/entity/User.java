@@ -1,10 +1,7 @@
 package ru.skypro.homework.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
@@ -12,9 +9,8 @@ import java.util.List;
 
 @Entity
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Table(name = "users")
 public class User {
 
     @Id
@@ -23,6 +19,9 @@ public class User {
 
     @Column(unique = true, nullable = false)
     String email;
+
+    @Column(nullable = false)
+    String password;
 
     @Column(nullable = false)
     String firstName;
@@ -37,13 +36,13 @@ public class User {
     @Column(nullable = false)
     Role role;
 
-//    @OneToOne
+    @OneToOne
     @JsonBackReference
     @JoinColumn(name = "image_id")
-    String image;
+    Image image;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-    private List<AdEntity> ads;
+    private List<Ad> ads;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<Comment> comments;

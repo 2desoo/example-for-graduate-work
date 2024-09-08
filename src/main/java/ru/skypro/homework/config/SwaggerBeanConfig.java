@@ -1,5 +1,6 @@
 package ru.skypro.homework.config;
 
+import lombok.var;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
