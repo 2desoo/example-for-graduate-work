@@ -1,8 +1,7 @@
 package ru.skypro.homework.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AccessLevel;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.Email;
@@ -10,6 +9,7 @@ import javax.validation.constraints.Email;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDTO {
+
     @JsonProperty("id")
     Integer id;
 
