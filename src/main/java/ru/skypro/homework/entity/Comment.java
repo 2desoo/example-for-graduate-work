@@ -1,19 +1,26 @@
-package ru.skypro.homework.dto;
+package ru.skypro.homework.entity;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.Objects;
 
-@Data
+@Entity(name = "comment")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CommentDTO {
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+public class Comment {
 
     @Schema(description = "Id автора комментария")
     Integer author;

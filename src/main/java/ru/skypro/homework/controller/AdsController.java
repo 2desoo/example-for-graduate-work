@@ -1,0 +1,197 @@
+package ru.skypro.homework.controller;
+
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Encoding;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.dto.AdDTO;
+import ru.skypro.homework.dto.AdsDTO;
+import ru.skypro.homework.dto.CreateOrUpdateAdDTO;
+import ru.skypro.homework.dto.ExtendedAdDTO;
+import ru.skypro.homework.service.impl.AdServiceImpl;
+import ru.skypro.homework.utils.MethodLog;
+
+import java.io.IOException;
+import java.util.List;
+
+@Slf4j
+@CrossOrigin(value = "http://localhost:3000")
+@RestController
+@Tag(name = "Объявления", description = "Контроллер для работы с объявлениями")
+@RequiredArgsConstructor
+@RequestMapping("/ads")
+public class AdsController {
+
+    private final AdServiceImpl adService;
+
+    @Operation(
+            tags = "Объявления",
+            summary = "Получение всех объявлений",
+            responses = {@ApiResponse(
+                    responseCode = "200", description = "OK",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = AdsDTO.class)
+                    )
+            )})
+    @GetMapping()
+    public ResponseEntity<?> getAllAds() {
+        log.info("Использован метод {}", MethodLog.getMethodName());
+        return ResponseEntity.ok(List.of(new AdsDTO()));
+    }
+
+    @Operation(
+            tags = "Объявления",
+            summary = "Добавление обьявления",
+
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    content = {@Content(
+                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                            encoding = @Encoding(
+                                    name = "properties",
+                                    contentType = "application/json"
+                            ))
+                    }
+            ),
+            responses = {@ApiResponse(responseCode = "201", description = "Created", content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(
+                            implementation = AdDTO.class
+                    )
+            )),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+            }
+    )
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> addAd(@RequestPart(name = "properties") CreateOrUpdateAdDTO properties,
+                                   @RequestPart(name = "image") MultipartFile image){
+        log.info("Использован метод {}", MethodLog.getMethodName());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+
+    @Operation(
+            tags = "Объявления",
+            summary = "Получение информации об объявлении",
+            responses = {@ApiResponse(responseCode = "200", description = "Created", content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(
+                            implementation = ExtendedAdDTO.class
+                    )
+
+            )),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+                    @ApiResponse(responseCode = "404", description = "Not found", content = @Content)
+            }
+    )
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getAds(@PathVariable Integer id) {
+        log.info("Использован метод {}", MethodLog.getMethodName());
+        return ResponseEntity.ok(new ExtendedAdDTO());
+    }
+
+    @Operation(
+            tags = "Объявления",
+            summary = "Удаление объявления",
+            responses = {
+                    @ApiResponse(
+                            content = @Content(
+                                    schema = @Schema(implementation = AdDTO.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "204", description = "No Content", content = @Content),
+                    @ApiResponse(
+                            responseCode = "401", description = "Unauthorized", content = @Content),
+                    @ApiResponse(
+                            responseCode = "403", description = "Forbidden", content = @Content),
+                    @ApiResponse(
+                            responseCode = "404", description = "Not found", content = @Content)
+            }
+    )
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> removeAd(@PathVariable Integer id) {
+        log.info("Использован метод {}", MethodLog.getMethodName());
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(
+            tags = "Объявления",
+            summary = "Обновление информации об объявлении",
+            responses = {@ApiResponse(responseCode = "200", description = "OK", content = @Content(
+                    schema = @Schema(
+                            implementation = AdDTO.class
+                    )
+
+            )),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+                    @ApiResponse(responseCode = "404", description = "Not found", content = @Content),
+                    @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+            }
+    )
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> updateAds(@PathVariable Integer id,
+                                       @RequestBody CreateOrUpdateAdDTO createOrUpdateAdDTO) {
+        log.info("Использован метод {}", MethodLog.getMethodName());
+        return ResponseEntity.ok(new AdDTO());
+    }
+
+    @Operation(
+            tags = "Объявления",
+            summary = "Получение объявлений авторизованного пользователя",
+            responses = {@ApiResponse(responseCode = "200", description = "OK", content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(
+                            implementation = AdsDTO.class
+                    )
+            )),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+            }
+    )
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getAdsMe() {
+        log.info("Использован метод {}", MethodLog.getMethodName());
+        return ResponseEntity.ok(new AdsDTO());
+    }
+
+    @Operation(
+            tags = "Объявления",
+            summary = "Обновление картинки объявления",
+            responses = {@ApiResponse(responseCode = "200", description = "OK", content = @Content(
+                    mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE,
+                    array = @ArraySchema(
+                            schema = @Schema(
+                                    type = "string",
+                                    format = "byte"
+                            )
+                    )
+            )),
+                    @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+                    @ApiResponse(responseCode = "404", description = "Not found", content = @Content)
+            }
+    )
+    @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateImage(@PathVariable Integer id,
+                                         @RequestBody MultipartFile image) throws IOException {
+        log.info("Использован метод {}", MethodLog.getMethodName());
+        byte[] imageBytes = image.getBytes();
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(imageBytes);
+    }
+
+}
