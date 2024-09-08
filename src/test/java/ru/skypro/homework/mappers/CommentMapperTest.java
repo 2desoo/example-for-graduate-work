@@ -6,6 +6,7 @@ import org.mapstruct.factory.Mappers;
 import ru.skypro.homework.dto.CommentDTO;
 import ru.skypro.homework.dto.CreateOrUpdateCommentDTO;
 import ru.skypro.homework.entity.Comment;
+import ru.skypro.homework.entity.Image;
 import ru.skypro.homework.entity.Role;
 import ru.skypro.homework.entity.User;
 
@@ -22,11 +23,19 @@ class CommentMapperTest {
 
     @Test
     void convertCommentDTO() {
+        User user = new User();
+        user.setId(1);
+        user.setEmail("testEmail@mail.ru");
+        user.setPassword("password"); // Не забудьте установить пароль
+        user.setFirstName("Иван");
+        user.setLastName("Иванов");
+        user.setPhone("+79993332211");
+        user.setRole(Role.USER);
+        // Убедитесь, что Image установлен корректно
+        user.setImage(new Image());
 
         Comment comment = new Comment();
-        comment.setUser(new User(1, "testEmail@mail.ru",
-                "Иван", "Иванов", "+79993332211",
-                Role.USER, "the path to the image"));
+        comment.setUser(user);
         comment.setAuthorImage("Ссылка на аватар  комментария");
         comment.setCreatedAt(1633);
         comment.setPk(1);
