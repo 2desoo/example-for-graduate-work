@@ -9,11 +9,11 @@ import javax.validation.constraints.Size;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LoginDTO {
-    @Schema(description = "Имя пользователя")
+public class NewPasswordDTO {
+    @Schema(description = "Текущий пароль")
     @Size(min = 8, max = 16)
-    String username;
-    @Schema(description = "Пароль")
-    @Size(min = 4, max = 32)
-    String password;
+    String currentPassword;
+    @Schema(description = "Новый пароль")
+    @Size(min = 8, max = 16)
+    String newPassword;
 }

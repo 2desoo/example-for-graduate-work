@@ -1,27 +1,49 @@
 package ru.skypro.homework.entity;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Table(name = "users")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
+
+    @Column(unique = true, nullable = false)
     String email;
+
+    @Column(nullable = false)
+    String password;
+
+    @Column(nullable = false)
     String firstName;
+
+    @Column(nullable = false)
     String lastName;
+
+    @Column(nullable = false)
     String phone;
+
+    @Enumerated(EnumType.STRING) //используется для хранения значений типа enum в базе данных в виде строк.
+    @Column(nullable = false)
     Role role;
-    String image;
+
+    @OneToOne
+    @JsonBackReference
+    @JoinColumn(name = "image_id")
+    Image image;
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    private List<Ad> ads;
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    private List<Comment> comments;
 }

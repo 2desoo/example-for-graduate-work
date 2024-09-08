@@ -11,9 +11,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-/**
- *Комментарий DTO
- */
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommentDTO {

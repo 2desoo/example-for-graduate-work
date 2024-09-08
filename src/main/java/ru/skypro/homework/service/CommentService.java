@@ -4,9 +4,7 @@ import ru.skypro.homework.dto.CreateOrUpdateCommentDTO;
 import ru.skypro.homework.entity.Comment;
 
 import java.util.Collection;
-/**
- * Пока просто для понятия логики
- */
+
 public interface CommentService {
     /**
      * Пока просто для понятия логики
