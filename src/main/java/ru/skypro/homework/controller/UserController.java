@@ -27,7 +27,7 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     public ResponseEntity<Void> setPassword(@RequestBody NewPasswordDto newPasswordDTO) {
-        log.info("Использован метод {}", MethodLog.getMethodName());
+        log.warn("POST запрос на смену пароля, тело запроса: {}, метод контроллера: {}", newPasswordDTO, MethodLog.getMethodName());
         return ResponseEntity.ok().build();
     }
 
@@ -37,7 +37,7 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
     })
     public ResponseEntity<UserDTO> getUser() {
-        log.info("Использован метод {}", MethodLog.getMethodName());
+        log.warn("GET запрос на получение активного пользователя, метод контроллера: {}", MethodLog.getMethodName());
         return ResponseEntity.ok(new UserDTO());
     }
 
@@ -47,7 +47,7 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
     })
     public ResponseEntity<UpdateUserDTO> updateUser(@RequestBody UpdateUserDTO updateUserDTO) {
-        log.info("Использован метод {}", MethodLog.getMethodName());
+        log.warn("PATCH запрос на обновление пользователя, тело запроса: {}, метод контроллера: {}", updateUserDTO, MethodLog.getMethodName());
         return ResponseEntity.ok(updateUserDTO);
     }
 
@@ -57,7 +57,7 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
     })
     public ResponseEntity<Void> updateUserImage(@RequestPart("image") MultipartFile multipartFile) {
-        log.info("Использован метод {}", MethodLog.getMethodName());
+        log.warn("PATCH запрос на обновление аватара пользователя, тело запроса: MultipartFile image, метод контроллера: {}", MethodLog.getMethodName());
         return ResponseEntity.ok().build();
     }
 }
