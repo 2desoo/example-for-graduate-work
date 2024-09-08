@@ -1,25 +1,34 @@
 package ru.skypro.homework.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import javax.validation.constraints.Email;
+
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDTO {
-    @Schema(description = "Id пользователя")
+    @JsonProperty("id")
     Integer id;
-    @Schema(description = "Email")
+
+    @Email
+    @JsonProperty("email")
     String email;
-    @Schema(description = "Имя пользователя")
+
+    @JsonProperty("first_name")
     String firstName;
-    @Schema(description = "Фамилия пользователя")
+
+    @JsonProperty("last_name")
     String lastName;
-    @Schema(description = "Телефон пользователя")
+
+    @JsonProperty("phone")
     String phone;
-    @Schema(description = "Роль пользователя")
-    RoleDTO roleDTO;
-    @Schema(description = "Ссылка на аватар пользователя")
+
+    @JsonProperty("role")
+    String role;
+
+    @JsonProperty("image")
     String image;
 }
