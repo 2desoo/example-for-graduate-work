@@ -20,7 +20,7 @@ public class CommentDTO {
 
     @Schema(description = "Id автора комментария")
     Integer author;
-    @Schema(description = "Ссылка на аватар автора комментария")
+    @Schema(description = "Ссылка на аватар комментария")
     String authorImage;
     @Schema(description = "Имя создателя комментария")
     String authorFirstName;

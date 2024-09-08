@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import ru.skypro.homework.entity.Comment;
 
 /**
- * Пока просто для понятия логики
+ * Репозиторий для комментариев
  */
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 }
