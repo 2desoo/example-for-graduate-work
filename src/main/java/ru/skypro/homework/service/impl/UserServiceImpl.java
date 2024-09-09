@@ -11,12 +11,15 @@ import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.UserService;
 
 @Service
-@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
 
-//    public UserDTO getCurrentUser() {
+    public UserServiceImpl(UserRepository repository) {
+        this.repository = repository;
+    }
+
+    //    public UserDTO getCurrentUser() {
 //        var userDTO = new UserDTO();
 //        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 //        User user = repository.findByEmail(auth.getName());

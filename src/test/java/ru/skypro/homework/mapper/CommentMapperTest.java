@@ -1,4 +1,4 @@
-package ru.skypro.homework.mappers;
+package ru.skypro.homework.mapper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,6 +9,7 @@ import ru.skypro.homework.entity.Comment;
 import ru.skypro.homework.entity.Image;
 import ru.skypro.homework.entity.Role;
 import ru.skypro.homework.entity.User;
+import ru.skypro.homework.mapper.CommentMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;;
 
