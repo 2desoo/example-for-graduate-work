@@ -20,6 +20,7 @@ import ru.skypro.homework.service.CommentService;
 import ru.skypro.homework.utils.MethodLog;
 
 import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -47,7 +48,7 @@ public class CommentController {
     @GetMapping(path = "/{id}/comments")
     public ResponseEntity<CommentsDTO> getComments(@PathVariable Integer id) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        CommentsDTO comments = new CommentsDTO();
+        CommentsDTO comments = commentService.getComments(id);
         return ResponseEntity.ok(comments);
     }
 
@@ -59,16 +60,16 @@ public class CommentController {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(
-                                    implementation = Comment.class
+                                    implementation = CommentDTO.class
                             ))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "404", description = "Not found", content = @Content)
     })
     @PostMapping(path = "/{id}/comments")
-    public ResponseEntity<Comment> createComment(@PathVariable int id,
+    public ResponseEntity<CommentDTO> createComment(@PathVariable Integer id,
                                                  @RequestBody CreateOrUpdateCommentDTO createOrUpdateCommentDTO) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        Comment createComment = commentService.createComment(id, createOrUpdateCommentDTO);
+        CommentDTO createComment = commentService.createComment(id, createOrUpdateCommentDTO);
         return ResponseEntity.ok(createComment);
     }
 
@@ -83,10 +84,10 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "Not found", content = @Content)
     })
     @DeleteMapping(path = "/{adId}/comments/{commentId}")
-    public ResponseEntity<Comment> removalComment(@PathVariable int adId,
-                                                  @PathVariable int commentId) {
+    public ResponseEntity<Comment> removalComment(@PathVariable Integer adId,
+                                                  @PathVariable Integer commentId) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        Comment removalComment = commentService.removalComment(commentId);
+        Comment removalComment = commentService.removalComment(adId, commentId);
         return ResponseEntity.ok(removalComment);
     }
 

@@ -9,7 +9,6 @@ import ru.skypro.homework.entity.Comment;
 import ru.skypro.homework.entity.Image;
 import ru.skypro.homework.entity.Role;
 import ru.skypro.homework.entity.User;
-import ru.skypro.homework.mapper.CommentMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;;
 
@@ -37,8 +36,6 @@ class CommentMapperTest {
 
         Comment comment = new Comment();
         comment.setUser(user);
-        comment.setAuthorImage("Ссылка на аватар  комментария");
-        comment.setCreatedAt(1633);
         comment.setPk(1);
         comment.setText("Text test");
 
@@ -59,7 +56,6 @@ class CommentMapperTest {
         commentDTO.setAuthor(1);
         commentDTO.setAuthorFirstName("Иван");
         commentDTO.setAuthorImage("Ссылка на аватар  комментария");
-        commentDTO.setCreatedAt(1633);
         commentDTO.setPk(1);
         commentDTO.setText("Text test");
 
@@ -67,7 +63,6 @@ class CommentMapperTest {
 
         assertEquals(1, comment.getUser().getId());
         assertEquals("Иван", comment.getUser().getFirstName());
-        assertEquals("Ссылка на аватар  комментария", comment.getAuthorImage());
         assertEquals(1633, comment.getCreatedAt());
         assertEquals(1, comment.getPk());
         assertEquals("Text test", comment.getText());
@@ -83,7 +78,6 @@ class CommentMapperTest {
 
         assertEquals("New comment", comment.getText());
         assertEquals(null, comment.getUser());
-        assertEquals(null, comment.getAuthorImage());
         assertEquals(null, comment.getCreatedAt());
         assertEquals(null, comment.getPk());
     }

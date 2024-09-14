@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comment")
@@ -20,13 +21,9 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer pk;
     /**
-     * Ссылка на аватар  комментария
-     */
-    String authorImage;
-    /**
      * Дата и время создания комментария в миллисекундах с 00:00:00 01.01.1970
      */
-    Integer createdAt;
+    LocalDateTime createdAt;
     /**
      * Текст комментария
      */
@@ -37,4 +34,8 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     User user;
+
+    @ManyToOne
+    @JoinColumn(name = "ad_pk", nullable = false)
+    Ad ad;
 }
