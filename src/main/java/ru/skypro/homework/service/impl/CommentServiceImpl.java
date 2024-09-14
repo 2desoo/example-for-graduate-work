@@ -1,6 +1,7 @@
 package ru.skypro.homework.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.CommentDTO;
 import ru.skypro.homework.dto.CommentsDTO;
@@ -14,6 +15,8 @@ import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.CommentService;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,27 +28,48 @@ public class CommentServiceImpl implements CommentService {
     private final AdRepository adRepository;
     private final UserRepository userRepository;
 
-    public CommentsDTO getComments(Integer id) {
-        List<CommentDTO> list = commentRepository.findByIdAdOrComments(id).stream()
+    public CommentsDTO getComments(Long id) {
+        List<CommentDTO> list = commentRepository.findCommentsById(id).stream()
                 .map(CommentMapper.INSTANCE::commentToCommentDTO)
                 .collect(Collectors.toList());
 
         CommentsDTO commentsDTO = new CommentsDTO();
-        commentsDTO.setCount(commentRepository.findByIdAdOrComments(id).size());
+        commentsDTO.setCount(commentRepository.findCommentsById(id).size());
         commentsDTO.setResults(list);
         return commentsDTO;
     }
 
-    public CommentDTO createComment(Integer adId, CreateOrUpdateCommentDTO createOrUpdateCommentDTO) {
-        Ad ad = adRepository.findById(adId.longValue()).orElse(null);
-        return null;
+    public CommentDTO createComment(Long adId, CreateOrUpdateCommentDTO createOrUpdateCommentDTO) {
+        LocalDateTime time = LocalDateTime.now();
+        User user = userRepository.findUserById(adId);
+        Ad ad = adRepository.findById(adId).orElse(null);
+        Comment comment = CommentMapper.INSTANCE.createOrUpdateCommentDTOToComment(createOrUpdateCommentDTO);
+        comment.setCreatedAt(time);
+        comment.setUser(user);
+        comment.setAd(ad);
+        commentRepository.save(comment);
+        return CommentMapper.INSTANCE.commentToCommentDTO(comment);
     }
 
-    public Comment removalComment(Integer adId, Integer commentId) {
-        return null;
+    public void removalComment(Long adId, Long commentId) {
+        Ad ad = adRepository.findAdById(adId);
+
+        Comment comment = commentRepository.findById(commentId).orElseThrow(RuntimeException::new);
+        commentRepository.delete(comment);
     }
 
-    public Comment editComment(Comment comment) {
-        return null;
+    public CommentDTO editComment(Long adId, Long commentId, CreateOrUpdateCommentDTO createOrUpdateCommentDTO) {
+        Comment comment = getComment(commentId);
+        comment.setText(createOrUpdateCommentDTO.getText());
+        commentRepository.save(comment);
+        return CommentMapper.INSTANCE.commentToCommentDTO(comment);
     }
+
+    public Comment getComment(Long pk) {
+        return commentRepository.findById(pk).orElseThrow(RuntimeException::new);
+    }
+
+    /*public boolean adsExist(Long adId) {
+        Ad ad = adRepository.findAdById()
+    }*/
 }

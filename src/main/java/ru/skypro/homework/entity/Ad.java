@@ -20,7 +20,7 @@ public class Ad {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer pk;
+    Long pk;
     @OneToOne
     @JsonBackReference
     Image image;

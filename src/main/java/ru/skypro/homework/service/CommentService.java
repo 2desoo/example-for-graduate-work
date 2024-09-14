@@ -1,5 +1,6 @@
 package ru.skypro.homework.service;
 
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import ru.skypro.homework.dto.CommentDTO;
 import ru.skypro.homework.dto.CommentsDTO;
 import ru.skypro.homework.dto.CreateOrUpdateCommentDTO;
@@ -12,17 +13,18 @@ public interface CommentService {
     /**
      * Пока просто для понятия логики
      */
-    CommentsDTO getComments(Integer id);
+    CommentsDTO getComments(Long id);
     /**
      * Пока просто для понятия логики
      */
-    CommentDTO createComment(Integer adId, CreateOrUpdateCommentDTO comment);
+    CommentDTO createComment(Long adId, CreateOrUpdateCommentDTO comment);
     /**
      * Пока просто для понятия логики
      */
-    Comment removalComment(Integer adId, Integer commentId);
+    void removalComment(Long adId, Long commentId);
+
     /**
      * Пока просто для понятия логики
      */
-    Comment editComment(Comment comment);
+    CommentDTO editComment(Long adId, Long commentId, CreateOrUpdateCommentDTO createOrUpdateCommentDTO);
 }

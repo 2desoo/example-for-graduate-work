@@ -37,5 +37,10 @@ public interface CommentMapper {
     /**
      * В сущность {@link Comment} из DTO {@link CreateOrUpdateCommentDTO} .
      */
+    @Mappings({
+            @Mapping(target = "user", ignore = true),
+            @Mapping(target = "createdAt", ignore = true),
+            @Mapping(target = "pk", ignore = true)
+    })
     Comment createOrUpdateCommentDTOToComment(CreateOrUpdateCommentDTO createOrUpdateCommentDTO);
 }

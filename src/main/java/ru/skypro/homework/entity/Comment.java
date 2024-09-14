@@ -2,7 +2,9 @@ package ru.skypro.homework.entity;
 
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
@@ -10,6 +12,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comment")
+@NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 public class Comment {
@@ -19,7 +23,7 @@ public class Comment {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer pk;
+    Long pk;
     /**
      * Дата и время создания комментария в миллисекундах с 00:00:00 01.01.1970
      */
