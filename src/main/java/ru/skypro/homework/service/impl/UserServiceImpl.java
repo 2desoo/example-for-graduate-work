@@ -1,14 +1,12 @@
 package ru.skypro.homework.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import ru.skypro.homework.dto.UserDTO;
 import ru.skypro.homework.entity.User;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.UserService;
+
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -30,4 +28,9 @@ public class UserServiceImpl implements UserService {
 //        userDTO.setRole(user.getRole().name());
 //        return userDTO;
 //    }
+
+    public User findByEmail(String login) {
+        return repository.findByEmail(login);
+    }
+
 }
