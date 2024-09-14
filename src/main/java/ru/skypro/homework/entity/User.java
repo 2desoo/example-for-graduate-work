@@ -41,9 +41,9 @@ public class User {
     @JoinColumn(name = "image_id")
     Image image;
 
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Ad> ads;
 
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Comment> comments;
 }

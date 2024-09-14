@@ -16,6 +16,8 @@ import ru.skypro.homework.dto.RegisterDTO;
 import ru.skypro.homework.service.AuthService;
 import ru.skypro.homework.utils.MethodLog;
 
+import javax.validation.Valid;
+
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
@@ -44,8 +46,9 @@ public class AuthController {
             @ApiResponse(responseCode = "201", description = "CREATED"),
             @ApiResponse(responseCode = "400", description = "BAD_REQUEST")
     })
-    public ResponseEntity<?> register(@RequestBody RegisterDTO registerDTO) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO registerDTO) {
         log.info("Использован метод {}", MethodLog.getMethodName());
+        log.info("Получены данные для регистрации: {}", registerDTO);
         if (authService.register(registerDTO)) {
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } else {

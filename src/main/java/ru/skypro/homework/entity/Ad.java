@@ -18,17 +18,17 @@ import java.util.List;
 @Table(name = "ad")
 public class Ad {
 
-    Integer author;
-    @OneToOne
-    @JsonBackReference
-    Image image;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer pk;
+    @OneToOne
+    @JsonBackReference
+    Image image;
     Integer price;
     String title;
     String description;
     @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     User user;
     @OneToMany
     List<Comment> comments;
