@@ -10,12 +10,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.skypro.homework.dto.CommentDTO;
 import ru.skypro.homework.dto.CommentsDTO;
 import ru.skypro.homework.dto.CreateOrUpdateCommentDTO;
 import ru.skypro.homework.entity.Comment;
+import ru.skypro.homework.exceptions.EntityNotFoundException;
 import ru.skypro.homework.service.CommentService;
 import ru.skypro.homework.utils.MethodLog;
 import org.springframework.security.core.Authentication;
@@ -49,8 +51,12 @@ public class CommentController {
     @GetMapping(path = "/{id}/comments")
     public ResponseEntity<CommentsDTO> getComments(@PathVariable Long id) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        CommentsDTO comments = commentService.getComments(id);
-        return ResponseEntity.ok(comments);
+        try {
+            commentService.getComments(id);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(commentService.getComments(id));
     }
 
     @Operation(
@@ -68,11 +74,14 @@ public class CommentController {
     })
     @PostMapping(path = "/{id}/comments")
     public ResponseEntity<CommentDTO> createComment(@PathVariable Long id,
-                                                 @RequestBody CreateOrUpdateCommentDTO createOrUpdateCommentDTO,
-                                                    Authentication authentication) throws IOException {
+                                                 @RequestBody CreateOrUpdateCommentDTO createOrUpdateCommentDTO) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        CommentDTO createComment = commentService.createComment(id, createOrUpdateCommentDTO);
-        return ResponseEntity.ok(createComment);
+        try {
+            commentService.createComment(id, createOrUpdateCommentDTO);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Operation(
@@ -89,8 +98,12 @@ public class CommentController {
     public ResponseEntity<Comment> removalComment(@PathVariable Long adId,
                                                   @PathVariable Long commentId) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        commentService.removalComment(adId, commentId);
-        return ResponseEntity.ok().build();
+        try {
+            commentService.removalComment(adId, commentId);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Operation(
@@ -113,7 +126,11 @@ public class CommentController {
                                                                 @PathVariable Long commentId,
                                                                 @RequestBody CreateOrUpdateCommentDTO createOrUpdateCommentDTO) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        CommentDTO commentDTO = commentService.editComment(adId, commentId, createOrUpdateCommentDTO);
-        return ResponseEntity.ok(commentDTO);
+        try {
+            commentService.editComment(adId, commentId, createOrUpdateCommentDTO);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(commentService.editComment(adId, commentId, createOrUpdateCommentDTO));
     }
 }
