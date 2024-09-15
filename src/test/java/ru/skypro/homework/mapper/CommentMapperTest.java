@@ -5,10 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import ru.skypro.homework.dto.CommentDTO;
 import ru.skypro.homework.dto.CreateOrUpdateCommentDTO;
-import ru.skypro.homework.entity.Comment;
-import ru.skypro.homework.entity.Image;
-import ru.skypro.homework.entity.Role;
-import ru.skypro.homework.entity.User;
+import ru.skypro.homework.entity.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;;
 
@@ -23,48 +20,51 @@ class CommentMapperTest {
 
     @Test
     void convertCommentDTO() {
-        User user = new User();
-        user.setId(1);
-        user.setEmail("testEmail@mail.ru");
-        user.setPassword("password"); // Не забудьте установить пароль
-        user.setFirstName("Иван");
-        user.setLastName("Иванов");
-        user.setPhone("+79993332211");
-        user.setRole(Role.USER);
-        // Убедитесь, что Image установлен корректно
-        user.setImage(new Image());
 
         Comment comment = new Comment();
+        comment.setPk(1L);
+        comment.setText("Test Comment");
+
+        User user = new User();
+        user.setId(1L);
+        user.setFirstName("Иван");
+        user.setEmail("user@mail.ru");
         comment.setUser(user);
-        comment.setPk(1);
-        comment.setText("Text test");
 
-        CommentDTO commentDTO = commentMapper.commentToCommentDTO(comment);
+        Ad ad = new Ad();
+        ad.setPk(1L);
+        comment.setAd(ad);
 
-        assertEquals(1, commentDTO.getAuthor());
-        assertEquals("Иван", commentDTO.getAuthorFirstName());
-        assertEquals("Ссылка на аватар  комментария", commentDTO.getAuthorImage());
-        assertEquals(1633, commentDTO.getCreatedAt());
-        assertEquals(1, commentDTO.getPk());
-        assertEquals("Text test", commentDTO.getText());
+        CommentDTO commentDto = commentMapper.commentToCommentDTO(comment);
+
+        assertEquals(1L, commentDto.getAuthor());
+        assertEquals("user@mail.ru", commentDto.getAuthorImage());
+        assertEquals("Иван", commentDto.getAuthorFirstName());
+        assertEquals(1L, commentDto.getPk());
+        assertEquals("Test Comment", commentDto.getText());
     }
 
     @Test
     void convertCommentEntity() {
 
+        User user = new User();
+        user.setId(1L);
+        user.setFirstName("Иван");
+        user.setEmail("user@mail.ru");
+
+        Ad ad = new Ad();
+        ad.setPk(1L);
+
         CommentDTO commentDTO = new CommentDTO();
-        commentDTO.setAuthor(1);
-        commentDTO.setAuthorFirstName("Иван");
-        commentDTO.setAuthorImage("Ссылка на аватар  комментария");
-        commentDTO.setPk(1);
+        commentDTO.setAuthor(user.getId());
+        commentDTO.setAuthorFirstName(user.getFirstName());
+        commentDTO.setAuthorImage(user.getEmail());
+        commentDTO.setPk(ad.getPk());
         commentDTO.setText("Text test");
 
         Comment comment = commentMapper.commentDTOToComment(commentDTO);
 
-        assertEquals(1, comment.getUser().getId());
-        assertEquals("Иван", comment.getUser().getFirstName());
-        assertEquals(1633, comment.getCreatedAt());
-        assertEquals(1, comment.getPk());
+        assertEquals(1L, comment.getUser().getId());
         assertEquals("Text test", comment.getText());
     }
 

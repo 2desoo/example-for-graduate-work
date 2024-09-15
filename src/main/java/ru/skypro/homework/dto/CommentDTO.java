@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class CommentDTO {
 
     @Schema(description = "Id автора комментария")
-    Integer author;
+    Long author;
     @Schema(description = "Ссылка на аватар комментария")
     String authorImage;
     @Schema(description = "Имя создателя комментария")
@@ -27,7 +27,7 @@ public class CommentDTO {
     @Schema(description = "Id комментария")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer pk;
+    Long pk;
     @Schema(description = "Текст комментария")
     String text;
 }

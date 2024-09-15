@@ -74,14 +74,15 @@ public class CommentController {
     })
     @PostMapping(path = "/{id}/comments")
     public ResponseEntity<CommentDTO> createComment(@PathVariable Long id,
-                                                 @RequestBody CreateOrUpdateCommentDTO createOrUpdateCommentDTO) {
+                                                 @RequestBody CreateOrUpdateCommentDTO createOrUpdateCommentDTO,
+                                                    Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
         try {
-            commentService.createComment(id, createOrUpdateCommentDTO);
+            commentService.createComment(id, createOrUpdateCommentDTO, authentication);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.ok(commentService.createComment(id, createOrUpdateCommentDTO, authentication));
     }
 
     @Operation(

@@ -38,7 +38,9 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     User user;
-
+    /**
+     * Связь с объявлениям
+     */
     @ManyToOne
     @JoinColumn(name = "ad_pk", nullable = false)
     Ad ad;

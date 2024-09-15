@@ -2,6 +2,7 @@ package ru.skypro.homework.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.Authentication;
 import ru.skypro.homework.dto.CommentDTO;
 import ru.skypro.homework.dto.CommentsDTO;
 import ru.skypro.homework.dto.CreateOrUpdateCommentDTO;
@@ -30,12 +31,12 @@ public class CommentServiceImpl implements CommentService {
 
     public CommentsDTO getComments(Long id) {
         if (adRepository.existsById(id)) {
-            List<CommentDTO> list = commentRepository.findCommentsById(id).stream()
+            List<CommentDTO> list = commentRepository.findCommentsByIdAd(id).stream()
                     .map(CommentMapper.INSTANCE::commentToCommentDTO)
                     .collect(Collectors.toList());
 
             CommentsDTO commentsDTO = new CommentsDTO();
-            commentsDTO.setCount(commentRepository.findCommentsById(id).size());
+            commentsDTO.setCount(commentRepository.findCommentsByIdAd(id).size());
             commentsDTO.setResults(list);
 
             return commentsDTO;
@@ -44,11 +45,11 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
-    public CommentDTO createComment(Long adId, CreateOrUpdateCommentDTO createOrUpdateCommentDTO) {
+    public CommentDTO createComment(Long adId, CreateOrUpdateCommentDTO createOrUpdateCommentDTO, Authentication authentication) {
         if (adRepository.existsById(adId)) {
 
             LocalDateTime time = LocalDateTime.now();
-            User user = userRepository.findUserById(adId);
+            User user = userRepository.findByEmail(authentication.getName()).orElseThrow(RuntimeException::new);
             Ad ad = adRepository.findById(adId).orElse(null);
 
             Comment comment = CommentMapper.INSTANCE.createOrUpdateCommentDTOToComment(createOrUpdateCommentDTO);

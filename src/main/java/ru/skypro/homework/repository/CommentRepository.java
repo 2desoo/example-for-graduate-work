@@ -15,5 +15,5 @@ import java.util.Optional;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query(value = "select * from \"comment\" c where c.ad_pk = :id", nativeQuery = true)
-    List<Comment> findCommentsById(@Param("id") Long id);
+    List<Comment> findCommentsByIdAd(@Param("id") Long id);
 }
