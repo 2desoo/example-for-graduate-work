@@ -1,5 +1,6 @@
 package ru.skypro.homework.service.impl;
 
+import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -54,6 +55,24 @@ public class UserServiceImpl implements UserService {
         User user = repository.findByEmail(auth.getName());
         log.info("Получен пользователь: {}", user);
         return mapper.toUserDTO(user);
+    }
+
+
+    //    public UserDTO getCurrentUser() {
+//        var userDTO = new UserDTO();
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        User user = repository.findByEmail(auth.getName());
+//        userDTO.setEmail(user.getEmail());
+//        userDTO.setFirstName(user.getFirstName());
+//        userDTO.setLastName(user.getLastName());
+//        userDTO.setPhone(user.getPhone());
+//        userDTO.setRole(user.getRole().name());
+//        return userDTO;
+//    }
+
+    @Override
+    public User findByEmail(String login) {
+        return repository.findByEmail(login);
     }
 
     public UserDTO updateUser(UpdateUserDTO updateUserDTO) {

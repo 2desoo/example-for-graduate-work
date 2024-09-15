@@ -43,4 +43,6 @@ public interface UserService {
      * @param userName - имя пользователя
      */
     void updateUserImage(MultipartFile image, String userName);
+  
+    User findByEmail(String login);
 }

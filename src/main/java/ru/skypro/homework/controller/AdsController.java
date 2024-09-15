@@ -13,17 +13,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.AdDTO;
 import ru.skypro.homework.dto.AdsDTO;
 import ru.skypro.homework.dto.CreateOrUpdateAdDTO;
 import ru.skypro.homework.dto.ExtendedAdDTO;
-import ru.skypro.homework.service.impl.AdServiceImpl;
+import ru.skypro.homework.service.AdService;
 import ru.skypro.homework.utils.MethodLog;
 
 import java.io.IOException;
-import java.util.List;
 
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
@@ -33,7 +33,7 @@ import java.util.List;
 @RequestMapping("/ads")
 public class AdsController {
 
-    private final AdServiceImpl adService;
+    private final AdService adService;
 
     @Operation(
             tags = "Объявления",
@@ -48,7 +48,7 @@ public class AdsController {
     @GetMapping()
     public ResponseEntity<?> getAllAds() {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        return ResponseEntity.ok(List.of(new AdsDTO()));
+        return ResponseEntity.ok(adService.getAllAds());
     }
 
     @Operation(
@@ -75,9 +75,10 @@ public class AdsController {
     )
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> addAd(@RequestPart(name = "properties") CreateOrUpdateAdDTO properties,
-                                   @RequestPart(name = "image") MultipartFile image){
+                                   @RequestPart(name = "image") MultipartFile image,
+                                   Authentication authentication) throws IOException {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return new ResponseEntity<>(adService.addAd(properties, image, authentication), HttpStatus.CREATED);
     }
 
 
@@ -98,7 +99,11 @@ public class AdsController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getAds(@PathVariable Integer id) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        return ResponseEntity.ok(new ExtendedAdDTO());
+        ExtendedAdDTO extendedAdDTO = adService.getById(id);
+        if (extendedAdDTO == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } else
+            return ResponseEntity.ok(extendedAdDTO);
     }
 
     @Operation(
@@ -121,9 +126,16 @@ public class AdsController {
             }
     )
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> removeAd(@PathVariable Integer id) {
+    public ResponseEntity<?> removeAd(@PathVariable Integer id, Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        return ResponseEntity.noContent().build();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        if (adService.isAdCreatorOrAdmin(id, authentication)) {
+            if (adService.deleteAd(id)) {
+                return ResponseEntity.noContent().build();
+            } else return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } else return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @Operation(
@@ -133,7 +145,6 @@ public class AdsController {
                     schema = @Schema(
                             implementation = AdDTO.class
                     )
-
             )),
                     @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
                     @ApiResponse(responseCode = "404", description = "Not found", content = @Content),
@@ -142,9 +153,19 @@ public class AdsController {
     )
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateAds(@PathVariable Integer id,
-                                       @RequestBody CreateOrUpdateAdDTO createOrUpdateAdDTO) {
+                                       @RequestBody CreateOrUpdateAdDTO createOrUpdateAdDTO,
+                                       Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        return ResponseEntity.ok(new AdDTO());
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        if (adService.findById(id.longValue()).isEmpty()) {
+            ResponseEntity.status(HttpStatus.NOT_FOUND);
+        }
+        if (!adService.isAdCreatorOrAdmin(id, authentication)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        return ResponseEntity.ok(adService.updateAd(id, createOrUpdateAdDTO));
     }
 
     @Operation(
@@ -161,9 +182,12 @@ public class AdsController {
     )
 
     @GetMapping("/me")
-    public ResponseEntity<?> getAdsMe() {
+    public ResponseEntity<?> getAdsMe(Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        return ResponseEntity.ok(new AdsDTO());
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(adService.getAdsMe(authentication));
     }
 
     @Operation(
@@ -185,8 +209,19 @@ public class AdsController {
     )
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateImage(@PathVariable Integer id,
-                                         @RequestBody MultipartFile image) throws IOException {
+                                         @RequestBody MultipartFile image,
+                                         Authentication authentication) throws IOException {
         log.info("Использован метод {}", MethodLog.getMethodName());
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        if (adService.findById(id.longValue()).isEmpty()) {
+            ResponseEntity.status(HttpStatus.NOT_FOUND);
+        }
+        if (!adService.isAdCreatorOrAdmin(id, authentication)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        adService.uploadImageForAd(id.longValue(), image);
         byte[] imageBytes = image.getBytes();
 
         return ResponseEntity.ok()

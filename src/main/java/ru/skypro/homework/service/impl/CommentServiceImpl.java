@@ -87,4 +87,9 @@ public class CommentServiceImpl implements CommentService {
     public Comment getComment(Long pk) {
         return commentRepository.findById(pk).orElseThrow(RuntimeException::new);
     }
+
+    @Override
+    public void deleteAll() {
+        commentRepository.deleteAll();
+    }
 }

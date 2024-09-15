@@ -23,6 +23,18 @@ import java.io.IOException;
 @Data
 public class ImageServiceImpl implements ImageService {
     private final ImageRepository imageRepository;
+    @Value(value = "${path.to.image.folder}")
+    private String photoDir;
+
+    @Override
+    public void saveImage(Image image) {
+        imageRepository.save(image);
+    }
+
+    @Override
+    public void deleteImageById(Long id) {
+        imageRepository.deleteById(id);
+    }
 
     @Override
     public ResponseEntity<byte[]> getImage(Long id) {

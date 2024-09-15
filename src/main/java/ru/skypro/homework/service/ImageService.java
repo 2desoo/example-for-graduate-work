@@ -30,4 +30,8 @@ public interface ImageService {
      * @param imageId - id изображения
      */
     void deleteImage(Long imageId);
+  
+    void saveImage(Image image);
+
+    void deleteImageById(Long id);
 }

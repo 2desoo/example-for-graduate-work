@@ -65,4 +65,6 @@ public interface CommentService {
      * @return {@link CommentDTO} используя {@link ru.skypro.homework.mapper.CommentMapper#commentToCommentDTO(Comment)}
      */
     CommentDTO editComment(Long adId, Long commentId, CreateOrUpdateCommentDTO createOrUpdateCommentDTO);
+  
+    void deleteAll();
 }
