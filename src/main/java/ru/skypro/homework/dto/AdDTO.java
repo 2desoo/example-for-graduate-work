@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AdDTO {
     @Schema(description = "id объявления")
-    Integer pk;
+    Long pk;
     @Schema(description = "id автора объявления")
     Integer author;
     @Schema(description = "ссылка на картинку объявления")

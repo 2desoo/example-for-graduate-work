@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.Mappings;
+import org.mapstruct.factory.Mappers;
 import ru.skypro.homework.dto.CommentDTO;
 import ru.skypro.homework.dto.CreateOrUpdateCommentDTO;
 import ru.skypro.homework.entity.Comment;
@@ -14,11 +15,14 @@ import ru.skypro.homework.entity.Comment;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface CommentMapper {
 
+    CommentMapper INSTANCE = Mappers.getMapper(CommentMapper.class);
+
     /**
      * В DTO {@link CommentDTO} из сущности {@link Comment}.
      */
     @Mapping(target = "author", source = "user.id")
     @Mapping(target = "authorFirstName", source = "user.firstName")
+    @Mapping(target = "authorImage", source = "user.email")
     CommentDTO commentToCommentDTO(Comment comment);
 
     /**
@@ -35,7 +39,6 @@ public interface CommentMapper {
      */
     @Mappings({
             @Mapping(target = "user", ignore = true),
-            @Mapping(target = "authorImage", ignore = true),
             @Mapping(target = "createdAt", ignore = true),
             @Mapping(target = "pk", ignore = true)
     })
