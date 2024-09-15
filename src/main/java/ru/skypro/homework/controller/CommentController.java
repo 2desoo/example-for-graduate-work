@@ -10,16 +10,20 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.skypro.homework.dto.CommentDTO;
 import ru.skypro.homework.dto.CommentsDTO;
 import ru.skypro.homework.dto.CreateOrUpdateCommentDTO;
 import ru.skypro.homework.entity.Comment;
+import ru.skypro.homework.exceptions.EntityNotFoundException;
 import ru.skypro.homework.service.CommentService;
 import ru.skypro.homework.utils.MethodLog;
+import org.springframework.security.core.Authentication;
 
-import java.util.Collection;
+import java.io.IOException;
+
 
 @Slf4j
 @RestController
@@ -45,10 +49,14 @@ public class CommentController {
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
     })
     @GetMapping(path = "/{id}/comments")
-    public ResponseEntity<CommentsDTO> getComments(@PathVariable Integer id) {
+    public ResponseEntity<CommentsDTO> getComments(@PathVariable Long id) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        CommentsDTO comments = new CommentsDTO();
-        return ResponseEntity.ok(comments);
+        try {
+            commentService.getComments(id);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(commentService.getComments(id));
     }
 
     @Operation(
@@ -59,17 +67,22 @@ public class CommentController {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(
-                                    implementation = Comment.class
+                                    implementation = CommentDTO.class
                             ))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "404", description = "Not found", content = @Content)
     })
     @PostMapping(path = "/{id}/comments")
-    public ResponseEntity<Comment> createComment(@PathVariable int id,
-                                                 @RequestBody CreateOrUpdateCommentDTO createOrUpdateCommentDTO) {
+    public ResponseEntity<CommentDTO> createComment(@PathVariable Long id,
+                                                 @RequestBody CreateOrUpdateCommentDTO createOrUpdateCommentDTO,
+                                                    Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        Comment createComment = commentService.createComment(id, createOrUpdateCommentDTO);
-        return ResponseEntity.ok(createComment);
+        try {
+            commentService.createComment(id, createOrUpdateCommentDTO, authentication);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(commentService.createComment(id, createOrUpdateCommentDTO, authentication));
     }
 
     @Operation(
@@ -83,11 +96,15 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "Not found", content = @Content)
     })
     @DeleteMapping(path = "/{adId}/comments/{commentId}")
-    public ResponseEntity<Comment> removalComment(@PathVariable int adId,
-                                                  @PathVariable int commentId) {
+    public ResponseEntity<Comment> removalComment(@PathVariable Long adId,
+                                                  @PathVariable Long commentId) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        Comment removalComment = commentService.removalComment(commentId);
-        return ResponseEntity.ok(removalComment);
+        try {
+            commentService.removalComment(adId, commentId);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Operation(
@@ -106,11 +123,15 @@ public class CommentController {
 
     })
     @PatchMapping(path = "/{adId}/comments/{commentId}")
-    public ResponseEntity<CreateOrUpdateCommentDTO> editComment(@PathVariable int adId,
-                                                                @PathVariable int commentId,
+    public ResponseEntity<CommentDTO> editComment(@PathVariable Long adId,
+                                                                @PathVariable Long commentId,
                                                                 @RequestBody CreateOrUpdateCommentDTO createOrUpdateCommentDTO) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        CreateOrUpdateCommentDTO newComment = new CreateOrUpdateCommentDTO();
-        return ResponseEntity.ok(newComment);
+        try {
+            commentService.editComment(adId, commentId, createOrUpdateCommentDTO);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(commentService.editComment(adId, commentId, createOrUpdateCommentDTO));
     }
 }

@@ -2,13 +2,18 @@ package ru.skypro.homework.entity;
 
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comment")
+@NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 public class Comment {
@@ -18,15 +23,11 @@ public class Comment {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer pk;
-    /**
-     * Ссылка на аватар  комментария
-     */
-    String authorImage;
+    Long pk;
     /**
      * Дата и время создания комментария в миллисекундах с 00:00:00 01.01.1970
      */
-    Integer createdAt;
+    LocalDateTime createdAt;
     /**
      * Текст комментария
      */
@@ -37,4 +38,10 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     User user;
+    /**
+     * Связь с объявлениям
+     */
+    @ManyToOne
+    @JoinColumn(name = "ad_pk", nullable = false)
+    Ad ad;
 }
