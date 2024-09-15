@@ -20,11 +20,10 @@ import ru.skypro.homework.dto.AdDTO;
 import ru.skypro.homework.dto.AdsDTO;
 import ru.skypro.homework.dto.CreateOrUpdateAdDTO;
 import ru.skypro.homework.dto.ExtendedAdDTO;
-import ru.skypro.homework.service.impl.AdServiceImpl;
+import ru.skypro.homework.service.AdService;
 import ru.skypro.homework.utils.MethodLog;
 
 import java.io.IOException;
-import java.util.List;
 
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
@@ -34,7 +33,7 @@ import java.util.List;
 @RequestMapping("/ads")
 public class AdsController {
 
-    private final AdServiceImpl adService;
+    private final AdService adService;
 
     @Operation(
             tags = "Объявления",

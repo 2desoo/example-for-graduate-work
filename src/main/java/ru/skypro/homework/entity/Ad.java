@@ -20,9 +20,8 @@ public class Ad {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer pk;
+    Long pk;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonBackReference
     Image image;
     Integer price;
     String title;

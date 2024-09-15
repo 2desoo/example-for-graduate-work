@@ -22,4 +22,6 @@ public interface CommentService {
      * Пока просто для понятия логики
      */
     Comment editComment(Comment comment);
+
+    void deleteAll();
 }

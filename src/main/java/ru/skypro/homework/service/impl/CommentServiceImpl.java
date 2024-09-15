@@ -30,4 +30,9 @@ public class CommentServiceImpl implements CommentService {
     public Comment editComment(Comment comment) {
         return null;
     }
+
+    @Override
+    public void deleteAll() {
+        commentRepository.deleteAll();
+    }
 }

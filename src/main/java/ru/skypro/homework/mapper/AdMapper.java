@@ -8,7 +8,6 @@ import ru.skypro.homework.dto.AdDTO;
 import ru.skypro.homework.dto.CreateOrUpdateAdDTO;
 import ru.skypro.homework.dto.ExtendedAdDTO;
 import ru.skypro.homework.entity.Ad;
-import ru.skypro.homework.entity.User;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface AdMapper {
@@ -27,8 +26,10 @@ public interface AdMapper {
     Ad createOrUpdateAdDTOToAd(CreateOrUpdateAdDTO createOrUpdateAdDTO);
 
     @Mapping(target = "pk", source = "ad.pk")
-    @Mapping(target = "authorFirstName", source = "user.firstName")
-    @Mapping(target = "authorLastName", source = "user.lastName")
+    @Mapping(target = "email", source = "ad.user.email")
+    @Mapping(target = "phone", source = "ad.user.phone")
+    @Mapping(target = "authorFirstName", source = "ad.user.firstName")
+    @Mapping(target = "authorLastName", source = "ad.user.lastName")
     @Mapping(target = "image", expression = "java(\"/image/\" + ad.getImage().getId())")
     ExtendedAdDTO toExtendedAdDTO (Ad ad);
 }

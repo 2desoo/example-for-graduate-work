@@ -6,8 +6,6 @@ import ru.skypro.homework.entity.User;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.UserService;
 
-import java.util.Optional;
-
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -29,6 +27,7 @@ public class UserServiceImpl implements UserService {
 //        return userDTO;
 //    }
 
+    @Override
     public User findByEmail(String login) {
         return repository.findByEmail(login);
     }
