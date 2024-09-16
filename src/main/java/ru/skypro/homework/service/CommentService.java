@@ -23,7 +23,7 @@ public interface CommentService {
      * После этого создается {@link CommentsDTO} и в него добавляем наш List.
      * @return {@link CommentsDTO} список комментариев к объявлению.
      */
-    CommentsDTO getComments(Long id);
+    CommentsDTO getComments(Long id, Authentication authentication);
     /**
      * Метод для создания комментария к объявлению
      * @param adId параметр по которому мы идентифицируем для какова объявления будет писаться комментарий
@@ -49,7 +49,7 @@ public interface CommentService {
      * используя метод {@link ru.skypro.homework.service.impl.CommentServiceImpl#getComment(Long)} мы находим комментарий
      * используя {@link ru.skypro.homework.repository.CommentRepository#delete(Object)} удаляем комментарий.
      */
-    void removalComment(Long adId, Long commentId);
+    void removalComment(Long adId, Long commentId, Authentication authentication);
 
     /**
      * Метод для изменения комментария.
@@ -64,5 +64,5 @@ public interface CommentService {
      * С помощью {@link ru.skypro.homework.repository.CommentRepository#save(Object)} сохраняем измененный комментарий
      * @return {@link CommentDTO} используя {@link ru.skypro.homework.mapper.CommentMapper#commentToCommentDTO(Comment)}
      */
-    CommentDTO editComment(Long adId, Long commentId, CreateOrUpdateCommentDTO createOrUpdateCommentDTO);
+    CommentDTO editComment(Long adId, Long commentId, CreateOrUpdateCommentDTO createOrUpdateCommentDTO, Authentication authentication);
 }
