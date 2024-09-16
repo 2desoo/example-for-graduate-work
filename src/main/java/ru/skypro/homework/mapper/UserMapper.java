@@ -13,7 +13,6 @@ import ru.skypro.homework.entity.User;
 public interface UserMapper {
 
     @Mapping(target = "email", source = "username")
-    @Mapping(target = "password", defaultValue = "pass123")
     User registerDTOToUser(RegisterDTO registerDTO);
 
     @Mapping(target = "image", expression = "java(user.getImage() != null ? \"/image/\" + user.getImage().getId() : null)")

@@ -58,7 +58,7 @@ public class CommentServiceImpl implements CommentService {
         } else if (adRepository.existsById(adId)) {
 
             LocalDateTime time = LocalDateTime.now();
-            User user = userRepository.findByEmail(authentication.getName()).orElseThrow(RuntimeException::new);
+            User user = userRepository.findByEmail(authentication.getName());
             Ad ad = adRepository.findById(adId).orElse(null);
 
             Comment comment = CommentMapper.INSTANCE.createOrUpdateCommentDTOToComment(createOrUpdateCommentDTO);
@@ -120,5 +120,10 @@ public class CommentServiceImpl implements CommentService {
 
     public Comment getComment(Long pk) {
         return commentRepository.findById(pk).orElseThrow(RuntimeException::new);
+    }
+
+    @Override
+    public void deleteAll() {
+        commentRepository.deleteAll();
     }
 }

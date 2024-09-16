@@ -1,10 +1,12 @@
 package ru.skypro.homework.service;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.Authentication;
 import ru.skypro.homework.dto.CommentDTO;
 import ru.skypro.homework.dto.CommentsDTO;
 import ru.skypro.homework.dto.CreateOrUpdateCommentDTO;
 import ru.skypro.homework.entity.Comment;
+import ru.skypro.homework.repository.CommentRepository;
 
 /**
  * Сервис для управления комментариями
@@ -64,5 +66,11 @@ public interface CommentService {
      * С помощью {@link ru.skypro.homework.repository.CommentRepository#save(Object)} сохраняем измененный комментарий
      * @return {@link CommentDTO} используя {@link ru.skypro.homework.mapper.CommentMapper#commentToCommentDTO(Comment)}
      */
+
     CommentDTO editComment(Long adId, Long commentId, CreateOrUpdateCommentDTO createOrUpdateCommentDTO, Authentication authentication);
+    /**
+     * Удаление всех комментариев
+     * Метод использует {@link CommentRepository#deleteAll()}
+     */
+    void deleteAll();
 }
