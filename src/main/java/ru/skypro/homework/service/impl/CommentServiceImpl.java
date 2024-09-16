@@ -11,6 +11,7 @@ import ru.skypro.homework.entity.Ad;
 import ru.skypro.homework.entity.Comment;
 import ru.skypro.homework.entity.User;
 import ru.skypro.homework.exceptions.EntityNotFoundException;
+import ru.skypro.homework.exceptions.ForbiddenException;
 import ru.skypro.homework.exceptions.UnauthorizedException;
 import ru.skypro.homework.mapper.CommentMapper;
 import ru.skypro.homework.repository.AdRepository;
@@ -77,7 +78,7 @@ public class CommentServiceImpl implements CommentService {
 
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new UnauthorizedException("User not authorized");
-        } else if (adRepository.existsById(adId)) {
+        } else if (!adRepository.existsById(adId)) {
             throw new EntityNotFoundException("Ad not found");
         }
 
@@ -88,7 +89,7 @@ public class CommentServiceImpl implements CommentService {
             commentRepository.delete(comment);
 
         } else {
-            throw new UnauthorizedException("No authority");
+            throw new ForbiddenException("No authority");
         }
     }
 
@@ -96,7 +97,7 @@ public class CommentServiceImpl implements CommentService {
                                   Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new UnauthorizedException("User not authorized");
-        } else if (adRepository.existsById(adId)) {
+        } else if (!adRepository.existsById(adId)) {
             throw new EntityNotFoundException("Ad not found");
         }
 
@@ -109,7 +110,7 @@ public class CommentServiceImpl implements CommentService {
             return CommentMapper.INSTANCE.commentToCommentDTO(comment);
 
         } else {
-            throw new UnauthorizedException("No authority");
+            throw new ForbiddenException("No authority");
         }
     }
 

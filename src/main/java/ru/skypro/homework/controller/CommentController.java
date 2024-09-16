@@ -18,6 +18,7 @@ import ru.skypro.homework.dto.CommentsDTO;
 import ru.skypro.homework.dto.CreateOrUpdateCommentDTO;
 import ru.skypro.homework.entity.Comment;
 import ru.skypro.homework.exceptions.EntityNotFoundException;
+import ru.skypro.homework.exceptions.ForbiddenException;
 import ru.skypro.homework.exceptions.UnauthorizedException;
 import ru.skypro.homework.service.CommentService;
 import ru.skypro.homework.utils.MethodLog;
@@ -112,6 +113,8 @@ public class CommentController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (ForbiddenException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -139,8 +142,12 @@ public class CommentController {
         log.info("Использован метод {}", MethodLog.getMethodName());
         try {
             commentService.editComment(adId, commentId, createOrUpdateCommentDTO, authentication);
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (ForbiddenException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         return ResponseEntity.ok(commentService.editComment(adId, commentId, createOrUpdateCommentDTO, authentication));
     }
