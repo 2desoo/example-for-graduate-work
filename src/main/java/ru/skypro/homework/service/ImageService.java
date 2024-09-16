@@ -30,8 +30,11 @@ public interface ImageService {
      * @param imageId - id изображения
      */
     void deleteImage(Long imageId);
-  
-    void saveImage(Image image);
 
-    void deleteImageById(Long id);
+    /**
+     * Добавление изображения в базу данных
+     * Метод использует {@link JpaRepository#save(Object)}
+     * @param image - Image entity
+     */
+    void saveImage(Image image);
 }

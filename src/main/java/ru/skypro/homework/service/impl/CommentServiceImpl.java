@@ -49,7 +49,7 @@ public class CommentServiceImpl implements CommentService {
         if (adRepository.existsById(adId)) {
 
             LocalDateTime time = LocalDateTime.now();
-            User user = userRepository.findByEmail(authentication.getName()).orElseThrow(RuntimeException::new);
+            User user = userRepository.findByEmail(authentication.getName());
             Ad ad = adRepository.findById(adId).orElse(null);
 
             Comment comment = CommentMapper.INSTANCE.createOrUpdateCommentDTOToComment(createOrUpdateCommentDTO);

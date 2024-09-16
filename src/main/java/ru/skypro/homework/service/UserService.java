@@ -43,6 +43,11 @@ public interface UserService {
      * @param userName - имя пользователя
      */
     void updateUserImage(MultipartFile image, String userName);
-  
+
+    /**
+     * Поиск пользователя по его email
+     * Метод использует {@link UserRepository#findByEmail(String)}
+     * @param login - email зарегистрированного пользователя
+     */
     User findByEmail(String login);
 }

@@ -122,7 +122,7 @@ public class AdServiceImpl implements AdService {
             adRepository.getReferenceById(Long.valueOf(id))
                     .getComments().forEach(comment -> commentService.deleteAll());
             log.info("Комментарии удалены");
-            imageService.deleteImageById(ad.getImage().getId());
+            imageService.deleteImage(ad.getImage().getId());
             log.info("Изображение удалено");
             adRepository.deleteById(id.longValue());
             log.info("Объявление удалено");

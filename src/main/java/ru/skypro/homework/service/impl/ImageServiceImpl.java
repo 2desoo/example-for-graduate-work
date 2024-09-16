@@ -3,6 +3,7 @@ package ru.skypro.homework.service.impl;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -29,11 +30,6 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public void saveImage(Image image) {
         imageRepository.save(image);
-    }
-
-    @Override
-    public void deleteImageById(Long id) {
-        imageRepository.deleteById(id);
     }
 
     @Override
