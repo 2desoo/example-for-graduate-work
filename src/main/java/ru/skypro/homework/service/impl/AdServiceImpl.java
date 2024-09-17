@@ -14,6 +14,10 @@ import ru.skypro.homework.dto.ExtendedAdDTO;
 import ru.skypro.homework.entity.Ad;
 import ru.skypro.homework.entity.Image;
 import ru.skypro.homework.entity.Role;
+import ru.skypro.homework.exceptions.AccessRightsNotAvailableException;
+import ru.skypro.homework.exceptions.AdNotFoundException;
+import ru.skypro.homework.exceptions.AdminAccessException;
+import ru.skypro.homework.exceptions.UnauthorizedException;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.service.AdService;
@@ -45,10 +49,139 @@ public class AdServiceImpl implements AdService {
     private String photoDir;
 
     @Override
-    public void uploadImageForAd(Long id, MultipartFile image) throws IOException {
+    public AdsDTO getAllAds() {
+        log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
+        List<AdDTO> listOfAds = adRepository.findAll().stream()
+                .map(AdMapper.INSTANCE::adToAdDTO).collect(Collectors.toList());
+        return new AdsDTO(listOfAds.size(), listOfAds);
+    }
+
+    @Override
+    public AdDTO addAd(CreateOrUpdateAdDTO createOrUpdateAdDTO, MultipartFile image,
+                       Authentication authentication) throws IOException {
         log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
 
-        Ad ad = findById(id).get();
+        checkAuthentication(authentication);
+        checkAdminAccess(authentication);
+
+        Ad ad = AdMapper.INSTANCE.createOrUpdateAdDTOToAd(createOrUpdateAdDTO);
+        ad.setUser(userService.findByEmail(authentication.getName()));
+        adRepository.save(ad);
+        log.info("Объявление сохранено: {}", ad);
+
+        uploadImageForAd(ad.getPk().intValue(), image);
+        return AdMapper.INSTANCE.adToAdDTO(ad);
+    }
+
+    @Override
+    public ExtendedAdDTO getById(Integer id, Authentication authentication) {
+        log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
+
+        checkAuthentication(authentication);
+        checkAdminAccess(authentication);
+
+        Optional<Ad> ad = findById(Long.valueOf(id));
+        checkAdIsPresent(ad);
+        log.info("Получено объявление: {}", ad);
+
+        return ad.map(AdMapper.INSTANCE::toExtendedAdDTO).orElse(null);
+    }
+
+    @Override
+    public void deleteAd(Integer id, Authentication authentication) {
+        log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
+        checkAuthentication(authentication);
+
+        Optional<Ad> foundAd = findById(Long.valueOf(id));
+        checkAdIsPresent(foundAd);
+
+        Ad ad = foundAd.get();
+
+        if (isAdCreatorOrAdmin(ad, authentication)) {
+            adRepository.getReferenceById(Long.valueOf(id))
+                    .getComments().forEach(comment -> commentService.deleteAll());
+            log.info("Комментарии удалены");
+
+            imageService.deleteImage(ad.getImage().getId());
+            log.info("Изображение удалено");
+
+            adRepository.deleteById(id.longValue());
+            log.info("Объявление удалено");
+        } else {
+            throw new AccessRightsNotAvailableException("Отсутствует доступ к объявлению");
+        }
+    }
+
+    @Override
+    public boolean isAdCreatorOrAdmin(Ad ad, Authentication authentication){
+        return userService.findByEmail(authentication.getName()).getRole() == Role.ADMIN
+                || authentication.getName().equals(ad.getUser().getEmail());
+    }
+
+    @Override
+    public AdDTO updateAd(Integer id, CreateOrUpdateAdDTO createOrUpdateAdDTO,
+                          Authentication authentication) {
+        log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
+        checkAuthentication(authentication);
+
+        Optional<Ad> foundAd = findById(id.longValue());
+        checkAdIsPresent(foundAd);
+
+        Ad ad = foundAd.get();
+        log.info("Получено объявление: {}", ad);
+
+        if (isAdCreatorOrAdmin(ad, authentication)) {
+            ad.setPrice(createOrUpdateAdDTO.getPrice());
+            ad.setTitle(createOrUpdateAdDTO.getTitle());
+            ad.setDescription(createOrUpdateAdDTO.getDescription());
+
+            adRepository.save(ad);
+            log.info("Объявление сохранено: {}", ad);
+            return AdMapper.INSTANCE.adToAdDTO(ad);
+        } else {
+            throw new AccessRightsNotAvailableException("Отсутствует доступ к объявлению");
+        }
+    }
+
+    @Override
+    public AdsDTO getAdsMe(Authentication authentication) {
+        log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
+
+        checkAuthentication(authentication);
+        checkAdminAccess(authentication);
+
+        List<AdDTO> listOfAds= adRepository.findAll().stream()
+                .filter(ad -> (ad.getUser().getEmail()).equals(authentication.getName()))
+                .map(AdMapper.INSTANCE::adToAdDTO).collect(Collectors.toList());
+        return new AdsDTO(listOfAds.size(), listOfAds);
+    }
+
+    @Override
+    public void updateImage(Integer id, MultipartFile image,
+                            Authentication authentication) throws IOException {
+        checkAuthentication(authentication);
+
+        Optional<Ad> foundAd = findById(id.longValue());
+        checkAdIsPresent(foundAd);
+        Ad ad = foundAd.get();
+        if (isAdCreatorOrAdmin(ad, authentication)) {
+            uploadImageForAd(id, image);
+        } else {
+            throw new AccessRightsNotAvailableException("Отсутствует доступ к объявлению");
+        }
+    }
+
+    @Override
+    public Optional<Ad> findById(Long id) {
+        log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
+        return adRepository.findById(id);
+    }
+
+    @Override
+    public void uploadImageForAd(Integer id, MultipartFile image) throws IOException {
+        log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
+
+        Ad ad = findById(id.longValue()).get();
         log.info("Получено объявление: {}", ad);
         Path filePath = Path.of(photoDir, ad.getPk() + "." + getExtension(image.getOriginalFilename()));
         Files.createDirectories(filePath.getParent());
@@ -81,90 +214,23 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
-    public AdsDTO getAllAds() {
-        log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
-        List<AdDTO> listOfAds = adRepository.findAll().stream()
-                .map(AdMapper.INSTANCE::adToAdDTO).collect(Collectors.toList());
-        return new AdsDTO(listOfAds.size(), listOfAds);
-    }
-
-    @Override
-    public AdDTO addAd(CreateOrUpdateAdDTO createOrUpdateAdDTO, MultipartFile image,
-                       Authentication authentication) throws IOException {
-        log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
-        Ad ad = AdMapper.INSTANCE.createOrUpdateAdDTOToAd(createOrUpdateAdDTO);
-        ad.setUser(userService.findByEmail(authentication.getName()));
-        adRepository.save(ad);
-        log.info("Объявление сохранено: {}", ad);
-
-        uploadImageForAd(ad.getPk(), image);
-        return AdMapper.INSTANCE.adToAdDTO(ad);
-    }
-
-    @Override
-    public ExtendedAdDTO getById(Integer id) {
-        log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
-        Optional<Ad> ad = findById(Long.valueOf(id));
-        log.info("Получено объявление: {}", ad);
-
-        return ad.map(AdMapper.INSTANCE::toExtendedAdDTO).orElse(null);
-    }
-
-    @Override
-    public boolean deleteAd(Integer id) {
-        log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
-        Optional<Ad> foundAd = findById(Long.valueOf(id));
-        if (!foundAd.isPresent()) {
-            log.info("Объявления не существует");
-            return false;
-        } else {
-            Ad ad = foundAd.get();
-            adRepository.getReferenceById(Long.valueOf(id))
-                    .getComments().forEach(comment -> commentService.deleteAll());
-            log.info("Комментарии удалены");
-            imageService.deleteImage(ad.getImage().getId());
-            log.info("Изображение удалено");
-            adRepository.deleteById(id.longValue());
-            log.info("Объявление удалено");
-            return true;
+    public void checkAuthentication(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new UnauthorizedException("Пользователь не авторизован");
         }
     }
 
     @Override
-    public boolean isAdCreatorOrAdmin(Integer id, Authentication authentication){
-        log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
-        Ad ad = findById(Long.valueOf(id)).get();
-        log.info("Получено объявление: {}", ad);
-        return userService.findByEmail(authentication.getName()).getRole() == Role.ADMIN
-                || authentication.getName().equals(ad.getUser().getEmail());
+    public void checkAdminAccess(Authentication authentication) {
+        if (userService.isAdmin(authentication.getName())) {
+            throw new AdminAccessException("Администратор не может выполнять это действие");
+        }
     }
 
     @Override
-    public AdDTO updateAd(Integer id, CreateOrUpdateAdDTO createOrUpdateAdDTO) {
-        log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
-        Ad ad = findById(id.longValue()).get();
-        log.info("Получено объявление: {}", ad);
-
-        ad.setPrice(createOrUpdateAdDTO.getPrice());
-        ad.setTitle(createOrUpdateAdDTO.getTitle());
-        ad.setDescription(createOrUpdateAdDTO.getDescription());
-        adRepository.save(ad);
-        log.info("Объявление сохранено: {}", ad);
-        return AdMapper.INSTANCE.adToAdDTO(ad);
-    }
-
-    @Override
-    public AdsDTO getAdsMe(Authentication authentication) {
-        log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
-        List<AdDTO> listOfAds= adRepository.findAll().stream()
-                .filter(ad -> (ad.getUser().getEmail()).equals(authentication.getName()))
-                .map(AdMapper.INSTANCE::adToAdDTO).collect(Collectors.toList());
-        return new AdsDTO(listOfAds.size(), listOfAds);
-    }
-
-    @Override
-    public Optional<Ad> findById(Long id) {
-        log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
-        return adRepository.findById(id);
+    public void checkAdIsPresent(Optional<Ad> ad) {
+        if (!ad.isPresent()) {
+            throw new AdNotFoundException("Объявление не найдено");
+        }
     }
 }

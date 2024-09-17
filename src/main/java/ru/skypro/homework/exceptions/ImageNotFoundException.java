@@ -1,4 +1,4 @@
-package ru.skypro.homework.exception;
+package ru.skypro.homework.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
