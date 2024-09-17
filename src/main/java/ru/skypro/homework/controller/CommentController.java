@@ -52,11 +52,10 @@ public class CommentController {
     public ResponseEntity<CommentsDTO> getComments(@PathVariable Long id) {
         log.info("Использован метод {}", MethodLog.getMethodName());
         try {
-            commentService.getComments(id);
+            return ResponseEntity.ok(commentService.getComments(id));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok(commentService.getComments(id));
     }
 
     @Operation(
@@ -78,11 +77,12 @@ public class CommentController {
                                                     Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
         try {
-            commentService.createComment(id, createOrUpdateCommentDTO, authentication);
+            return ResponseEntity.ok(commentService.createComment
+                    (id,
+                            createOrUpdateCommentDTO, authentication));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok(commentService.createComment(id, createOrUpdateCommentDTO, authentication));
     }
 
     @Operation(
@@ -115,7 +115,7 @@ public class CommentController {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(
-                                    implementation = Comment.class
+                                    implementation = CreateOrUpdateCommentDTO.class
                             ))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content),
@@ -128,10 +128,9 @@ public class CommentController {
                                                                 @RequestBody CreateOrUpdateCommentDTO createOrUpdateCommentDTO) {
         log.info("Использован метод {}", MethodLog.getMethodName());
         try {
-            commentService.editComment(adId, commentId, createOrUpdateCommentDTO);
+            return ResponseEntity.ok(commentService.editComment(adId, commentId, createOrUpdateCommentDTO));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok(commentService.editComment(adId, commentId, createOrUpdateCommentDTO));
     }
 }

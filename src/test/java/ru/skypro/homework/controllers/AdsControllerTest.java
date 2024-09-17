@@ -51,11 +51,11 @@ public class AdsControllerTest {
     @SpyBean
     private AdsController adsController;
 
-    User user1 = new User(1, "user@gmail.com", "password",
+    User user1 = new User(1L, "user@gmail.com", "password",
             "Maria", "Sinyavskaya", "12345678910",
             Role.USER, null, null, null);
 
-   User user2 = new User(2, "user2@gmail.com", "pass123",
+   User user2 = new User(2L, "user2@gmail.com", "pass123",
            "Ivan", "Ivanov", "10987654321",
            Role.ADMIN, null, null, null);
 
