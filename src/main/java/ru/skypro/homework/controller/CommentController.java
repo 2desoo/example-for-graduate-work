@@ -81,8 +81,7 @@ public class CommentController {
         log.info("Использован метод {}", MethodLog.getMethodName());
         try {
             return ResponseEntity.ok(commentService.createComment
-                    (id,
-                            createOrUpdateCommentDTO, authentication));
+                    (id, createOrUpdateCommentDTO, authentication));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }

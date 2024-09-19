@@ -36,10 +36,9 @@ public class CommentServiceImpl implements CommentService {
 
     public CommentsDTO getComments(Long id, Authentication authentication) {
 
-        if (authentication == null || !authentication.isAuthenticated()) {
-            log.error("User not authorized");
-            throw new UnauthorizedException("User not authorized");
-        } else if (adRepository.existsById(id)) {
+        verificationAuthorization(authentication);
+
+        if (adRepository.existsById(id)) {
 
             List<CommentDTO> list = commentRepository.findCommentsByIdAd(id).stream()
                     .map(CommentMapper.INSTANCE::commentToCommentDTO)
@@ -57,10 +56,10 @@ public class CommentServiceImpl implements CommentService {
     }
 
     public CommentDTO createComment(Long adId, CreateOrUpdateCommentDTO createOrUpdateCommentDTO, Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            log.error("User not authorized");
-            throw new UnauthorizedException("User not authorized");
-        } else if (adRepository.existsById(adId)) {
+
+        verificationAuthorization(authentication);
+
+         if (adRepository.existsById(adId)) {
 
             LocalDateTime time = LocalDateTime.now();
             User user = userRepository.findByEmail(authentication.getName());
@@ -82,10 +81,9 @@ public class CommentServiceImpl implements CommentService {
 
     public void removalComment(Long adId, Long commentId, Authentication authentication) {
 
-        if (authentication == null || !authentication.isAuthenticated()) {
-            log.error("User not authorized");
-            throw new UnauthorizedException("User not authorized");
-        } else if (!adRepository.existsById(adId)) {
+        verificationAuthorization(authentication);
+
+        if (!adRepository.existsById(adId)) {
             log.error("Ad not found");
             throw new EntityNotFoundException("Ad not found");
         }
@@ -103,10 +101,10 @@ public class CommentServiceImpl implements CommentService {
 
     public CommentDTO editComment(Long adId, Long commentId, CreateOrUpdateCommentDTO createOrUpdateCommentDTO,
                                   Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            log.error("User not authorized");
-            throw new UnauthorizedException("User not authorized");
-        } else if (!adRepository.existsById(adId)) {
+
+        verificationAuthorization(authentication);
+
+        if (!adRepository.existsById(adId)) {
             log.error("Ad not found");
             throw new EntityNotFoundException("Ad not found");
         }
@@ -126,6 +124,13 @@ public class CommentServiceImpl implements CommentService {
 
     public boolean admin(Authentication authentication) {
         return authentication.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"));
+    }
+
+    public void verificationAuthorization(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            log.error("User not authorized");
+            throw new UnauthorizedException("User not authorized");
+            }
     }
 
     public Comment getComment(Long pk) {
