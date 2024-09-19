@@ -55,7 +55,7 @@ public class CommentController {
                                                    Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
         try {
-            return ResponseEntity.ok(commentService.getComments(id));
+            return ResponseEntity.ok(commentService.getComments(id, authentication));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -86,7 +86,6 @@ public class CommentController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok(commentService.createComment(id, createOrUpdateCommentDTO, authentication));
     }
 
     @Operation(
@@ -105,7 +104,7 @@ public class CommentController {
                                                   Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
         try {
-            commentService.removalComment(adId, commentId);
+            commentService.removalComment(adId, commentId, authentication);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -134,7 +133,7 @@ public class CommentController {
                                                   Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
         try {
-            return ResponseEntity.ok(commentService.editComment(adId, commentId, createOrUpdateCommentDTO));
+            return ResponseEntity.ok(commentService.editComment(adId, commentId, createOrUpdateCommentDTO, authentication));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
