@@ -7,6 +7,8 @@ import lombok.experimental.FieldDefaults;
 import javax.validation.constraints.Email;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDTO {
 

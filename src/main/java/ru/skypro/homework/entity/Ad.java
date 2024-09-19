@@ -1,10 +1,6 @@
 package ru.skypro.homework.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;

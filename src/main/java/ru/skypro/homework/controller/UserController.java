@@ -46,7 +46,9 @@ public class UserController {
             log.error("Неверный пароль");
             return ResponseEntity.status(403).build();
         }
-        return ResponseEntity.ok(service.updatePassword(newPasswordDTO));
+        service.updatePassword(newPasswordDTO);
+        log.info("Пароль обновлен");
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/me")

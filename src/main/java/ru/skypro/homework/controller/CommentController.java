@@ -18,6 +18,8 @@ import ru.skypro.homework.dto.CommentsDTO;
 import ru.skypro.homework.dto.CreateOrUpdateCommentDTO;
 import ru.skypro.homework.entity.Comment;
 import ru.skypro.homework.exceptions.EntityNotFoundException;
+import ru.skypro.homework.exceptions.ForbiddenException;
+import ru.skypro.homework.exceptions.UnauthorizedException;
 import ru.skypro.homework.service.CommentService;
 import ru.skypro.homework.utils.MethodLog;
 import org.springframework.security.core.Authentication;
@@ -49,7 +51,8 @@ public class CommentController {
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
     })
     @GetMapping(path = "/{id}/comments")
-    public ResponseEntity<CommentsDTO> getComments(@PathVariable Long id) {
+    public ResponseEntity<CommentsDTO> getComments(@PathVariable Long id,
+                                                   Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
         try {
             return ResponseEntity.ok(commentService.getComments(id));
@@ -83,6 +86,7 @@ public class CommentController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+        return ResponseEntity.ok(commentService.createComment(id, createOrUpdateCommentDTO, authentication));
     }
 
     @Operation(
@@ -97,7 +101,8 @@ public class CommentController {
     })
     @DeleteMapping(path = "/{adId}/comments/{commentId}")
     public ResponseEntity<Comment> removalComment(@PathVariable Long adId,
-                                                  @PathVariable Long commentId) {
+                                                  @PathVariable Long commentId,
+                                                  Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
         try {
             commentService.removalComment(adId, commentId);
@@ -125,7 +130,8 @@ public class CommentController {
     @PatchMapping(path = "/{adId}/comments/{commentId}")
     public ResponseEntity<CommentDTO> editComment(@PathVariable Long adId,
                                                                 @PathVariable Long commentId,
-                                                                @RequestBody CreateOrUpdateCommentDTO createOrUpdateCommentDTO) {
+                                                                @RequestBody CreateOrUpdateCommentDTO createOrUpdateCommentDTO,
+                                                  Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
         try {
             return ResponseEntity.ok(commentService.editComment(adId, commentId, createOrUpdateCommentDTO));
