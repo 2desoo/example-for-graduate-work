@@ -17,7 +17,7 @@ public class AdMapperTest {
     @Test
     public void testAdToAdDTO() {
         User user = new User();
-        user.setId(1);
+        user.setId(1L);
         user.setFirstName("Мария");
         user.setLastName("Синявская");
 

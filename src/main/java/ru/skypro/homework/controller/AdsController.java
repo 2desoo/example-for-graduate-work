@@ -89,6 +89,7 @@ public class AdsController {
         }
     }
 
+
     @Operation(
             tags = "Объявления",
             summary = "Получение информации об объявлении",
@@ -191,6 +192,7 @@ public class AdsController {
                     @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
             }
     )
+
     @GetMapping("/me")
     public ResponseEntity<?> getAdsMe(Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());

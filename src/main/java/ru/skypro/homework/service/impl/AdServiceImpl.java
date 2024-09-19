@@ -108,6 +108,7 @@ public class AdServiceImpl implements AdService {
             adRepository.deleteById(id.longValue());
             log.info("Объявление удалено");
         } else {
+            log.error("Отсутствует доступ к объявлению");
             throw new AccessRightsNotAvailableException("Отсутствует доступ к объявлению");
         }
     }
@@ -139,6 +140,7 @@ public class AdServiceImpl implements AdService {
             log.info("Объявление сохранено: {}", ad);
             return AdMapper.INSTANCE.adToAdDTO(ad);
         } else {
+            log.error("Отсутствует доступ к объявлению");
             throw new AccessRightsNotAvailableException("Отсутствует доступ к объявлению");
         }
     }
@@ -167,6 +169,7 @@ public class AdServiceImpl implements AdService {
         if (isAdCreatorOrAdmin(ad, authentication)) {
             uploadImageForAd(id, image);
         } else {
+            log.error("Отсутствует доступ к объявлению");
             throw new AccessRightsNotAvailableException("Отсутствует доступ к объявлению");
         }
     }
@@ -216,6 +219,7 @@ public class AdServiceImpl implements AdService {
     @Override
     public void checkAuthentication(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
+            log.error("Пользователь не авторизован");
             throw new UnauthorizedException("Пользователь не авторизован");
         }
     }
@@ -223,6 +227,7 @@ public class AdServiceImpl implements AdService {
     @Override
     public void checkAdminAccess(Authentication authentication) {
         if (userService.isAdmin(authentication.getName())) {
+            log.error("Администратор не может выполнять это действие");
             throw new AdminAccessException("Администратор не может выполнять это действие");
         }
     }
@@ -230,6 +235,7 @@ public class AdServiceImpl implements AdService {
     @Override
     public void checkAdIsPresent(Optional<Ad> ad) {
         if (!ad.isPresent()) {
+            log.error("Объявление не найдено");
             throw new AdNotFoundException("Объявление не найдено");
         }
     }

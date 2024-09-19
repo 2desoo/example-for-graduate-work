@@ -16,7 +16,7 @@ public interface UserService {
      * Метод использует {@link UserRepository#findByEmail(String)}
      * @param passwordDTO - DTO модель класса {@link NewPasswordDTO}
      */
-    Void updatePassword(NewPasswordDTO passwordDTO);
+    void updatePassword(NewPasswordDTO passwordDTO);
 
     /**
      * Извлекает текущего аутентифицированного пользователя.

@@ -115,7 +115,7 @@ class CommentServiceImplTest {
 
         Mockito.when(authentication.isAuthenticated()).thenReturn(true);
         Mockito.when(adRepository.existsById(ad.getPk())).thenReturn(true);
-        Mockito.when(userRepository.findByEmail(authentication.getName())).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.findByEmail(authentication.getName())).thenReturn(user);
         Mockito.when(adRepository.findById(ad.getPk())).thenReturn(Optional.of(ad));
 
         Comment savedComment = new Comment();

@@ -1,6 +1,7 @@
 package ru.skypro.homework.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.Authentication;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
@@ -35,6 +37,7 @@ public class CommentServiceImpl implements CommentService {
     public CommentsDTO getComments(Long id, Authentication authentication) {
 
         if (authentication == null || !authentication.isAuthenticated()) {
+            log.error("User not authorized");
             throw new UnauthorizedException("User not authorized");
         } else if (adRepository.existsById(id)) {
 
@@ -48,12 +51,14 @@ public class CommentServiceImpl implements CommentService {
 
             return commentsDTO;
         } else {
+            log.error("Ad not found");
             throw new EntityNotFoundException("Ad not found");
         }
     }
 
     public CommentDTO createComment(Long adId, CreateOrUpdateCommentDTO createOrUpdateCommentDTO, Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
+            log.error("User not authorized");
             throw new UnauthorizedException("User not authorized");
         } else if (adRepository.existsById(adId)) {
 
@@ -70,6 +75,7 @@ public class CommentServiceImpl implements CommentService {
 
             return CommentMapper.INSTANCE.commentToCommentDTO(comment);
         } else {
+            log.error("Ad not found");
             throw new EntityNotFoundException("Ad not found");
         }
     }
@@ -77,8 +83,10 @@ public class CommentServiceImpl implements CommentService {
     public void removalComment(Long adId, Long commentId, Authentication authentication) {
 
         if (authentication == null || !authentication.isAuthenticated()) {
+            log.error("User not authorized");
             throw new UnauthorizedException("User not authorized");
         } else if (!adRepository.existsById(adId)) {
+            log.error("Ad not found");
             throw new EntityNotFoundException("Ad not found");
         }
 
@@ -96,8 +104,10 @@ public class CommentServiceImpl implements CommentService {
     public CommentDTO editComment(Long adId, Long commentId, CreateOrUpdateCommentDTO createOrUpdateCommentDTO,
                                   Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
+            log.error("User not authorized");
             throw new UnauthorizedException("User not authorized");
         } else if (!adRepository.existsById(adId)) {
+            log.error("Ad not found");
             throw new EntityNotFoundException("Ad not found");
         }
 
