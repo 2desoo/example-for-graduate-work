@@ -6,15 +6,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPasswordDTO;
 import ru.skypro.homework.dto.UpdateUserDTO;
 import ru.skypro.homework.dto.UserDTO;
+import ru.skypro.homework.entity.Role;
 import ru.skypro.homework.entity.User;
-import ru.skypro.homework.exception.UserNotFoundException;
+import ru.skypro.homework.exceptions.UserNotFoundException;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.ImageService;
@@ -102,5 +102,11 @@ public class UserServiceImpl implements UserService {
         user.setImage(imageService.addImage(image));
         imageService.deleteImage(imageId);
         repository.save(user);
+    }
+
+    @Override
+    public boolean isAdmin(String email) {
+        User user = repository.findByEmail(email);
+        return user != null && user.getRole().equals(Role.ADMIN);
     }
 }

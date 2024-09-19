@@ -50,4 +50,12 @@ public interface UserService {
      * @param login - email зарегистрированного пользователя
      */
     User findByEmail(String login);
+
+    /**
+     * Метод проверяет, что пользователь имеет роль админа
+     * Метод использует {@link UserRepository#findByEmail(String)}
+     * @param email - email пользователя
+     * @return true - если пользователь имеет роль админа, false - в противном случае
+     */
+    boolean isAdmin(String email);
 }

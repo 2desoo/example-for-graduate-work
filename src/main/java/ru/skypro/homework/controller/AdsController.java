@@ -20,6 +20,10 @@ import ru.skypro.homework.dto.AdDTO;
 import ru.skypro.homework.dto.AdsDTO;
 import ru.skypro.homework.dto.CreateOrUpdateAdDTO;
 import ru.skypro.homework.dto.ExtendedAdDTO;
+import ru.skypro.homework.exceptions.AccessRightsNotAvailableException;
+import ru.skypro.homework.exceptions.AdNotFoundException;
+import ru.skypro.homework.exceptions.AdminAccessException;
+import ru.skypro.homework.exceptions.UnauthorizedException;
 import ru.skypro.homework.service.AdService;
 import ru.skypro.homework.utils.MethodLog;
 
@@ -78,9 +82,12 @@ public class AdsController {
                                    @RequestPart(name = "image") MultipartFile image,
                                    Authentication authentication) throws IOException {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        return new ResponseEntity<>(adService.addAd(properties, image, authentication), HttpStatus.CREATED);
+        try {
+            return new ResponseEntity<>(adService.addAd(properties, image, authentication), HttpStatus.CREATED);
+        } catch (UnauthorizedException | AdminAccessException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
     }
-
 
     @Operation(
             tags = "Объявления",
@@ -97,13 +104,16 @@ public class AdsController {
             }
     )
     @GetMapping("/{id}")
-    public ResponseEntity<?> getAds(@PathVariable Integer id) {
+    public ResponseEntity<?> getAds(@PathVariable Integer id, Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        ExtendedAdDTO extendedAdDTO = adService.getById(id);
-        if (extendedAdDTO == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } else
+        try {
+            ExtendedAdDTO extendedAdDTO = adService.getById(id, authentication);
             return ResponseEntity.ok(extendedAdDTO);
+        } catch (UnauthorizedException | AdminAccessException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (AdNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @Operation(
@@ -128,14 +138,16 @@ public class AdsController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> removeAd(@PathVariable Integer id, Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        try {
+            adService.deleteAd(id, authentication);
+            return ResponseEntity.noContent().build();
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (AdNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (AccessRightsNotAvailableException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        if (adService.isAdCreatorOrAdmin(id, authentication)) {
-            if (adService.deleteAd(id)) {
-                return ResponseEntity.noContent().build();
-            } else return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } else return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @Operation(
@@ -156,16 +168,15 @@ public class AdsController {
                                        @RequestBody CreateOrUpdateAdDTO createOrUpdateAdDTO,
                                        Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        if (adService.findById(id.longValue()).isEmpty()) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND);
-        }
-        if (!adService.isAdCreatorOrAdmin(id, authentication)) {
+        try {
+            return ResponseEntity.ok(adService.updateAd(id, createOrUpdateAdDTO, authentication));
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (AdNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (AccessRightsNotAvailableException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        return ResponseEntity.ok(adService.updateAd(id, createOrUpdateAdDTO));
     }
 
     @Operation(
@@ -180,14 +191,15 @@ public class AdsController {
                     @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
             }
     )
-
     @GetMapping("/me")
     public ResponseEntity<?> getAdsMe(Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        try {
+            AdsDTO adsDTO = adService.getAdsMe(authentication);
+            return ResponseEntity.ok(adsDTO);
+        } catch (UnauthorizedException | AdminAccessException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
-        return ResponseEntity.ok(adService.getAdsMe(authentication));
     }
 
     @Operation(
@@ -212,21 +224,21 @@ public class AdsController {
                                          @RequestBody MultipartFile image,
                                          Authentication authentication) throws IOException {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        if (adService.findById(id.longValue()).isEmpty()) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND);
-        }
-        if (!adService.isAdCreatorOrAdmin(id, authentication)) {
+        try {
+            adService.updateImage(id, image, authentication);
+            byte[] imageBytes = image.getBytes();
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(imageBytes);
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (AdNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (AccessRightsNotAvailableException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        adService.uploadImageForAd(id.longValue(), image);
-        byte[] imageBytes = image.getBytes();
 
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(imageBytes);
     }
 
 }
