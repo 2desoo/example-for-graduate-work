@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+// Data Transfer Object для обновления пользователя
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateUserDTO {

@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+// Data Transfer Object для объявления
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AdDTO {

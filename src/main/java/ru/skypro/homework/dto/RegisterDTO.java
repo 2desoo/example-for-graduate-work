@@ -9,6 +9,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+// Data Transfer Object для регистрации пользователя
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RegisterDTO {

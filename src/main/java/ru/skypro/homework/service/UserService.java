@@ -1,6 +1,7 @@
 package ru.skypro.homework.service;
 
 
+import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPasswordDTO;
 import ru.skypro.homework.dto.UpdateUserDTO;
@@ -15,16 +16,18 @@ public interface UserService {
      * Обновляет пароль пользователя
      * Метод использует {@link UserRepository#findByEmail(String)}
      * @param passwordDTO - DTO модель класса {@link NewPasswordDTO}
+     * @param authentication - аутентифицированный пользователь
      */
-    Void updatePassword(NewPasswordDTO passwordDTO);
+    void updatePassword(NewPasswordDTO passwordDTO, Authentication authentication);
 
     /**
      * Извлекает текущего аутентифицированного пользователя.
      * Метод использует {@link UserRepository#findByEmail(String)}
      * {@link UserMapper#toUserDTO(User)}
+     * @param authentication - аутентифицированный пользователь
      * @return - объект UserDTO, представляющий текущего пользователя.
      */
-    UserDTO getCurrentUser();
+    UserDTO getCurrentUser(Authentication authentication);
 
     /**
      * Изменение данных пользователя
@@ -32,17 +35,19 @@ public interface UserService {
      * {@link UserMapper#updateUserDTOToUser(UpdateUserDTO, User)}
      * {@link UserMapper#toUserDTO(User)}
      * @param updateUserDTO - DTO модель класса {@link UpdateUserDTO}
+     * @param authentication - аутентифицированный пользователь
      * @return - пользователя с измененными данными
      */
-    UserDTO updateUser(UpdateUserDTO updateUserDTO);
+    UserDTO updateUser(UpdateUserDTO updateUserDTO, Authentication authentication);
 
     /**
      * Метод для обновления аватара пользователя
      * Метод использует {@link UserRepository#findByEmail(String)}
      * @param image - файл аватара
      * @param userName - имя пользователя
+     * @param authentication - аутентифицированный пользователь
      */
-    void updateUserImage(MultipartFile image, String userName);
+    void updateUserImage(MultipartFile image, String userName, Authentication authentication);
 
     /**
      * Поиск пользователя по его email
@@ -50,4 +55,12 @@ public interface UserService {
      * @param login - email зарегистрированного пользователя
      */
     User findByEmail(String login);
+
+    /**
+     * Метод проверяет, что пользователь имеет роль админа
+     * Метод использует {@link UserRepository#findByEmail(String)}
+     * @param email - email пользователя
+     * @return true - если пользователь имеет роль админа, false - в противном случае
+     */
+    boolean isAdmin(String email);
 }

@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
+// Data Transfer Object для списка объявлений
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor

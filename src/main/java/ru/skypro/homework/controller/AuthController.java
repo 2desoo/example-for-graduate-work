@@ -35,8 +35,10 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
         log.info("Использован метод {}", MethodLog.getMethodName());
         if (authService.login(loginDTO.getUsername(), loginDTO.getPassword())) {
+            log.info("Авторизация прошла успешно");
             return ResponseEntity.ok().build();
         } else {
+            log.error("Неверные имя пользователя или пароль");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
@@ -50,8 +52,10 @@ public class AuthController {
         log.info("Использован метод {}", MethodLog.getMethodName());
         log.info("Получены данные для регистрации: {}", registerDTO);
         if (authService.register(registerDTO)) {
+            log.info("Регистрация прошла успешно");
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } else {
+            log.error("Пользователь с таким именем уже существует");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
