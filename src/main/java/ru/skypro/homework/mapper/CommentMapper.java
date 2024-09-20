@@ -22,7 +22,7 @@ public interface CommentMapper {
      */
     @Mapping(target = "author", source = "user.id")
     @Mapping(target = "authorFirstName", source = "user.firstName")
-    @Mapping(target = "authorImage", source = "user.email")
+    @Mapping(target = "authorImage", source = "user.image.filePath")
     CommentDTO commentToCommentDTO(Comment comment);
 
     /**

@@ -124,7 +124,7 @@ public class CommentController {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(
-                                    implementation = CreateOrUpdateCommentDTO.class
+                                    implementation = CommentDTO.class
                             ))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content),
