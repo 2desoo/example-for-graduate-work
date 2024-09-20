@@ -21,8 +21,8 @@ public interface CommentMapper {
      * В DTO {@link CommentDTO} из сущности {@link Comment}.
      */
     @Mapping(target = "author", source = "user.id")
+    @Mapping(target = "authorImage", source = "user.image.filePath")
     @Mapping(target = "authorFirstName", source = "user.firstName")
-    @Mapping(target = "authorImage", source = "user.email")
     CommentDTO commentToCommentDTO(Comment comment);
 
     /**
