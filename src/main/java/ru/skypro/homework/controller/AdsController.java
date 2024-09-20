@@ -20,10 +20,10 @@ import ru.skypro.homework.dto.AdDTO;
 import ru.skypro.homework.dto.AdsDTO;
 import ru.skypro.homework.dto.CreateOrUpdateAdDTO;
 import ru.skypro.homework.dto.ExtendedAdDTO;
-import ru.skypro.homework.exceptions.AccessRightsNotAvailableException;
-import ru.skypro.homework.exceptions.AdNotFoundException;
-import ru.skypro.homework.exceptions.AdminAccessException;
-import ru.skypro.homework.exceptions.UnauthorizedException;
+import ru.skypro.homework.exception.AccessRightsNotAvailableException;
+import ru.skypro.homework.exception.AdNotFoundException;
+import ru.skypro.homework.exception.AdminAccessException;
+import ru.skypro.homework.exception.UnauthorizedException;
 import ru.skypro.homework.service.AdService;
 import ru.skypro.homework.utils.MethodLog;
 
@@ -88,6 +88,7 @@ public class AdsController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
+
 
     @Operation(
             tags = "Объявления",
@@ -191,6 +192,7 @@ public class AdsController {
                     @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
             }
     )
+
     @GetMapping("/me")
     public ResponseEntity<?> getAdsMe(Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());

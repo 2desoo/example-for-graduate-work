@@ -32,7 +32,7 @@ public class AdMapperTest {
         AdDTO adDTO = adMapper.adToAdDTO(ad);
 
         assertEquals(ad.getPk().intValue(), adDTO.getPk());
-        assertEquals(ad.getUser().getId(), adDTO.getAuthor());
+        assertEquals(ad.getUser().getId(), adDTO.getAuthor().longValue());
         assertEquals("/image/" + ad.getImage().getId(), adDTO.getImage());
         }
 

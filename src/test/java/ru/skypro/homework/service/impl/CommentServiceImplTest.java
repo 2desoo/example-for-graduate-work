@@ -8,7 +8,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import ru.skypro.homework.dto.CommentDTO;
 import ru.skypro.homework.dto.CommentsDTO;
 import ru.skypro.homework.dto.CreateOrUpdateCommentDTO;
@@ -16,15 +15,14 @@ import ru.skypro.homework.entity.Ad;
 import ru.skypro.homework.entity.Comment;
 import ru.skypro.homework.entity.Role;
 import ru.skypro.homework.entity.User;
-import ru.skypro.homework.exceptions.EntityNotFoundException;
-import ru.skypro.homework.exceptions.ForbiddenException;
-import ru.skypro.homework.exceptions.UnauthorizedException;
+import ru.skypro.homework.exception.EntityNotFoundException;
+import ru.skypro.homework.exception.ForbiddenException;
+import ru.skypro.homework.exception.UnauthorizedException;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.repository.UserRepository;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -115,7 +113,7 @@ class CommentServiceImplTest {
 
         Mockito.when(authentication.isAuthenticated()).thenReturn(true);
         Mockito.when(adRepository.existsById(ad.getPk())).thenReturn(true);
-        Mockito.when(userRepository.findByEmail(authentication.getName())).thenReturn(Optional.of(user));
+        Mockito.when(userRepository.findByEmail(authentication.getName())).thenReturn(user);
         Mockito.when(adRepository.findById(ad.getPk())).thenReturn(Optional.of(ad));
 
         Comment savedComment = new Comment();

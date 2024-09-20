@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.Size;
 
+// Data Transfer Object для логина
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LoginDTO {

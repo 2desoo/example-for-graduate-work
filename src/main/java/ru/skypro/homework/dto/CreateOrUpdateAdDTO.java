@@ -9,6 +9,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
+// Data Transfer Object для создания или обновления объявления
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreateOrUpdateAdDTO {

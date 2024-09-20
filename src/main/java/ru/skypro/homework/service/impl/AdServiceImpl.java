@@ -14,16 +14,16 @@ import ru.skypro.homework.dto.ExtendedAdDTO;
 import ru.skypro.homework.entity.Ad;
 import ru.skypro.homework.entity.Image;
 import ru.skypro.homework.entity.Role;
-import ru.skypro.homework.exceptions.AccessRightsNotAvailableException;
-import ru.skypro.homework.exceptions.AdNotFoundException;
-import ru.skypro.homework.exceptions.AdminAccessException;
-import ru.skypro.homework.exceptions.UnauthorizedException;
+import ru.skypro.homework.exception.AccessRightsNotAvailableException;
+import ru.skypro.homework.exception.AdNotFoundException;
+import ru.skypro.homework.exception.AdminAccessException;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.service.AdService;
 import ru.skypro.homework.service.CommentService;
 import ru.skypro.homework.service.ImageService;
 import ru.skypro.homework.service.UserService;
+import ru.skypro.homework.utils.CheckAuthentication;
 import ru.skypro.homework.utils.MethodLog;
 
 import java.io.*;
@@ -44,6 +44,7 @@ public class AdServiceImpl implements AdService {
     private final UserService userService;
     private final ImageService imageService;
     private final CommentService commentService;
+    private final CheckAuthentication checkAuthentication;
 
     @Value("${path.to.photo.folder}")
     private String photoDir;
@@ -61,7 +62,7 @@ public class AdServiceImpl implements AdService {
                        Authentication authentication) throws IOException {
         log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
 
-        checkAuthentication(authentication);
+        checkAuthentication.checkAuthentication(authentication);
         checkAdminAccess(authentication);
 
         Ad ad = AdMapper.INSTANCE.createOrUpdateAdDTOToAd(createOrUpdateAdDTO);
@@ -77,7 +78,7 @@ public class AdServiceImpl implements AdService {
     public ExtendedAdDTO getById(Integer id, Authentication authentication) {
         log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
 
-        checkAuthentication(authentication);
+        checkAuthentication.checkAuthentication(authentication);
         checkAdminAccess(authentication);
 
         Optional<Ad> ad = findById(Long.valueOf(id));
@@ -90,7 +91,8 @@ public class AdServiceImpl implements AdService {
     @Override
     public void deleteAd(Integer id, Authentication authentication) {
         log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
-        checkAuthentication(authentication);
+
+        checkAuthentication.checkAuthentication(authentication);
 
         Optional<Ad> foundAd = findById(Long.valueOf(id));
         checkAdIsPresent(foundAd);
@@ -108,12 +110,13 @@ public class AdServiceImpl implements AdService {
             adRepository.deleteById(id.longValue());
             log.info("Объявление удалено");
         } else {
+            log.error("Отсутствует доступ к объявлению");
             throw new AccessRightsNotAvailableException("Отсутствует доступ к объявлению");
         }
     }
 
     @Override
-    public boolean isAdCreatorOrAdmin(Ad ad, Authentication authentication){
+    public boolean isAdCreatorOrAdmin(Ad ad, Authentication authentication) {
         return userService.findByEmail(authentication.getName()).getRole() == Role.ADMIN
                 || authentication.getName().equals(ad.getUser().getEmail());
     }
@@ -122,7 +125,7 @@ public class AdServiceImpl implements AdService {
     public AdDTO updateAd(Integer id, CreateOrUpdateAdDTO createOrUpdateAdDTO,
                           Authentication authentication) {
         log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
-        checkAuthentication(authentication);
+        checkAuthentication.checkAuthentication(authentication);
 
         Optional<Ad> foundAd = findById(id.longValue());
         checkAdIsPresent(foundAd);
@@ -139,6 +142,7 @@ public class AdServiceImpl implements AdService {
             log.info("Объявление сохранено: {}", ad);
             return AdMapper.INSTANCE.adToAdDTO(ad);
         } else {
+            log.error("Отсутствует доступ к объявлению");
             throw new AccessRightsNotAvailableException("Отсутствует доступ к объявлению");
         }
     }
@@ -147,10 +151,10 @@ public class AdServiceImpl implements AdService {
     public AdsDTO getAdsMe(Authentication authentication) {
         log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
 
-        checkAuthentication(authentication);
+        checkAuthentication.checkAuthentication(authentication);
         checkAdminAccess(authentication);
 
-        List<AdDTO> listOfAds= adRepository.findAll().stream()
+        List<AdDTO> listOfAds = adRepository.findAll().stream()
                 .filter(ad -> (ad.getUser().getEmail()).equals(authentication.getName()))
                 .map(AdMapper.INSTANCE::adToAdDTO).collect(Collectors.toList());
         return new AdsDTO(listOfAds.size(), listOfAds);
@@ -159,7 +163,7 @@ public class AdServiceImpl implements AdService {
     @Override
     public void updateImage(Integer id, MultipartFile image,
                             Authentication authentication) throws IOException {
-        checkAuthentication(authentication);
+        checkAuthentication.checkAuthentication(authentication);
 
         Optional<Ad> foundAd = findById(id.longValue());
         checkAdIsPresent(foundAd);
@@ -167,6 +171,7 @@ public class AdServiceImpl implements AdService {
         if (isAdCreatorOrAdmin(ad, authentication)) {
             uploadImageForAd(id, image);
         } else {
+            log.error("Отсутствует доступ к объявлению");
             throw new AccessRightsNotAvailableException("Отсутствует доступ к объявлению");
         }
     }
@@ -214,15 +219,9 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
-    public void checkAuthentication(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new UnauthorizedException("Пользователь не авторизован");
-        }
-    }
-
-    @Override
     public void checkAdminAccess(Authentication authentication) {
         if (userService.isAdmin(authentication.getName())) {
+            log.error("Администратор не может выполнять это действие");
             throw new AdminAccessException("Администратор не может выполнять это действие");
         }
     }
@@ -230,6 +229,7 @@ public class AdServiceImpl implements AdService {
     @Override
     public void checkAdIsPresent(Optional<Ad> ad) {
         if (!ad.isPresent()) {
+            log.error("Объявление не найдено");
             throw new AdNotFoundException("Объявление не найдено");
         }
     }

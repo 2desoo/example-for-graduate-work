@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import javax.persistence.*;
 import java.util.List;
 
+// Сущность объявления
 @Entity
 @Data
 @NoArgsConstructor
@@ -16,15 +17,15 @@ public class Ad {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long pk;
+    Long pk; // id объявления
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    Image image;
-    Integer price;
-    String title;
-    String description;
+    Image image; // изображение
+    Integer price; // цена
+    String title; // название
+    String description; // описание
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    User user;
+    User user; // создатель объявления
     @OneToMany
-    List<Comment> comments;
+    List<Comment> comments; // комментарии
 }

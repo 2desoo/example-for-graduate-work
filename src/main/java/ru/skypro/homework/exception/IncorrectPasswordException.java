@@ -1,6 +1,4 @@
-package ru.skypro.homework.exceptions;
-
-import org.springframework.web.bind.annotation.ResponseStatus;
+package ru.skypro.homework.exception;
 
 public class IncorrectPasswordException extends RuntimeException{
     public IncorrectPasswordException() {

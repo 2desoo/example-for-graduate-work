@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 
+// Data Transfer Object для комментария
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommentDTO {

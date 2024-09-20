@@ -3,6 +3,7 @@ package ru.skypro.homework.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+// Data Transfer Object для расширенного объявления
 @Data
 public class ExtendedAdDTO {
     @Schema(description = "id объявления")
