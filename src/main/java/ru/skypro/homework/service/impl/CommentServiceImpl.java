@@ -19,6 +19,7 @@ import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.CommentService;
+import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.utils.CheckAuthentication;
 
 import java.time.LocalDateTime;
@@ -35,6 +36,7 @@ public class CommentServiceImpl implements CommentService {
     private final AdRepository adRepository;
     private final UserRepository userRepository;
     private final CheckAuthentication checkAuthentication;
+    private final UserService userService;
 
     public CommentsDTO getComments(Long id, Authentication authentication) {
 
@@ -92,7 +94,7 @@ public class CommentServiceImpl implements CommentService {
 
         Comment comment = getComment(commentId);
 
-        if (comment.getUser().getEmail().equals(authentication.getName()) || admin(authentication)) {
+        if (comment.getUser().getEmail().equals(authentication.getName()) || userService.isAdmin(authentication.getName())) {
 
             commentRepository.delete(comment);
 
@@ -113,7 +115,7 @@ public class CommentServiceImpl implements CommentService {
 
         Comment comment = getComment(commentId);
 
-        if (comment.getUser().getEmail().equals(authentication.getName()) || admin(authentication)) {
+        if (comment.getUser().getEmail().equals(authentication.getName()) || userService.isAdmin(authentication.getName())) {
 
             comment.setText(createOrUpdateCommentDTO.getText());
             commentRepository.save(comment);
