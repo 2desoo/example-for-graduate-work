@@ -6,9 +6,7 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
 
-/**
- *Создать или обновить комментарий DTO
- */
+// Data Transfer Object для создания или обновления комментария
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreateOrUpdateCommentDTO {

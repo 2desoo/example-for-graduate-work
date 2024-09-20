@@ -4,13 +4,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import ru.skypro.homework.entity.Comment;
 
 import java.util.List;
 
-/**
- *Комментарии DTO
- */
+// Data Transfer Object для списка комментариев
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommentsDTO {

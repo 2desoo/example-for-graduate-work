@@ -17,14 +17,12 @@ import ru.skypro.homework.dto.CommentDTO;
 import ru.skypro.homework.dto.CommentsDTO;
 import ru.skypro.homework.dto.CreateOrUpdateCommentDTO;
 import ru.skypro.homework.entity.Comment;
-import ru.skypro.homework.exceptions.EntityNotFoundException;
-import ru.skypro.homework.exceptions.ForbiddenException;
-import ru.skypro.homework.exceptions.UnauthorizedException;
+import ru.skypro.homework.exception.EntityNotFoundException;
+import ru.skypro.homework.exception.ForbiddenException;
+import ru.skypro.homework.exception.UnauthorizedException;
 import ru.skypro.homework.service.CommentService;
 import ru.skypro.homework.utils.MethodLog;
 import org.springframework.security.core.Authentication;
-
-import java.io.IOException;
 
 
 @Slf4j
@@ -78,7 +76,7 @@ public class CommentController {
     })
     @PostMapping(path = "/{id}/comments")
     public ResponseEntity<CommentDTO> createComment(@PathVariable Long id,
-                                                 @RequestBody CreateOrUpdateCommentDTO createOrUpdateCommentDTO,
+                                                    @RequestBody CreateOrUpdateCommentDTO createOrUpdateCommentDTO,
                                                     Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
         try {
@@ -135,8 +133,8 @@ public class CommentController {
     })
     @PatchMapping(path = "/{adId}/comments/{commentId}")
     public ResponseEntity<CommentDTO> editComment(@PathVariable Long adId,
-                                                                @PathVariable Long commentId,
-                                                                @RequestBody CreateOrUpdateCommentDTO createOrUpdateCommentDTO,
+                                                  @PathVariable Long commentId,
+                                                  @RequestBody CreateOrUpdateCommentDTO createOrUpdateCommentDTO,
                                                   Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
         try {

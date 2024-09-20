@@ -5,6 +5,7 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 
+// Сущность изображения для хранения в базе данных.
 @Entity
 @Data
 @NoArgsConstructor
@@ -13,11 +14,11 @@ import javax.persistence.*;
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private long fileSize;
-    private String filePath;
-    private String mediaType;
+    private Long id; // id изображения
+    private long fileSize; // размер изображения
+    private String filePath; // путь к изображению
+    private String mediaType; // тип изображения
     @Lob
     @Type(type = "org.hibernate.type.ImageType")
-    private byte[] data;
+    private byte[] data; // данные изображения
 }

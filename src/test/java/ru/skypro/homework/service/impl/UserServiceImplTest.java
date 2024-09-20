@@ -11,14 +11,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.skypro.homework.dto.UserDTO;
 
-import ru.skypro.homework.exceptions.UserNotFoundException;
+import ru.skypro.homework.exception.UserNotFoundException;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.ImageService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static ru.skypro.homework.constant.TestConstants.*;
@@ -41,28 +40,18 @@ class UserServiceImplTest {
     @InjectMocks
     private UserServiceImpl service;
 
-//    @Test
-//    void updatePasswordSuccessful() {
-//        // Мокирование аутентификации
-//        Authentication mockAuthentication = mock(Authentication.class);
-//        when(mockAuthentication.isAuthenticated()).thenReturn(true);
-//        when(mockAuthentication.getName()).thenReturn(mockUser.getEmail());
-//
-//        // Мокирование контекста безопасности
-//        SecurityContext mockSecurityContext = mock(SecurityContext.class);
-//        when(mockSecurityContext.getAuthentication()).thenReturn(mockAuthentication);
-//
-//        SecurityContextHolder.setContext(mockSecurityContext);
-//
-//        // Мокирование вызова метода findByEmail
-////        when(repository.findByEmail(anyString())).thenReturn(mockUser);
-//
-//        // В данном случае repository.save не является необходимым, если не проверяется
-//        service.updatePassword(mockPasswordDTO);
-//
-//        // Верификация вызова метода save
-//        verify(repository).save(any());
-//    }
+    @Test
+    void updatePasswordSuccessful() {
+        Authentication mockAuthentication = mock(Authentication.class);
+        when(mockAuthentication.isAuthenticated()).thenReturn(true);
+        when(mockAuthentication.getName()).thenReturn(mockUser.getEmail());
+
+        when(repository.findByEmail(anyString())).thenReturn(mockUser);
+
+        service.updatePassword(mockPasswordDTO);
+
+        verify(repository).save(any());
+    }
 
     @Test
     void updatePasswordFail() {

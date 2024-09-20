@@ -11,14 +11,15 @@ import ru.skypro.homework.dto.CreateOrUpdateCommentDTO;
 import ru.skypro.homework.entity.Ad;
 import ru.skypro.homework.entity.Comment;
 import ru.skypro.homework.entity.User;
-import ru.skypro.homework.exceptions.EntityNotFoundException;
-import ru.skypro.homework.exceptions.ForbiddenException;
-import ru.skypro.homework.exceptions.UnauthorizedException;
+import ru.skypro.homework.exception.EntityNotFoundException;
+import ru.skypro.homework.exception.ForbiddenException;
+import ru.skypro.homework.exception.UnauthorizedException;
 import ru.skypro.homework.mapper.CommentMapper;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.CommentService;
+import ru.skypro.homework.utils.CheckAuthentication;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,10 +34,11 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final AdRepository adRepository;
     private final UserRepository userRepository;
+    private final CheckAuthentication checkAuthentication;
 
     public CommentsDTO getComments(Long id, Authentication authentication) {
 
-        verificationAuthorization(authentication);
+        checkAuthentication.checkAuthentication(authentication);
 
         if (adRepository.existsById(id)) {
 
@@ -57,9 +59,9 @@ public class CommentServiceImpl implements CommentService {
 
     public CommentDTO createComment(Long adId, CreateOrUpdateCommentDTO createOrUpdateCommentDTO, Authentication authentication) {
 
-        verificationAuthorization(authentication);
+        checkAuthentication.checkAuthentication(authentication);
 
-         if (adRepository.existsById(adId)) {
+        if (adRepository.existsById(adId)) {
 
             LocalDateTime time = LocalDateTime.now();
             User user = userRepository.findByEmail(authentication.getName());
@@ -81,7 +83,7 @@ public class CommentServiceImpl implements CommentService {
 
     public void removalComment(Long adId, Long commentId, Authentication authentication) {
 
-        verificationAuthorization(authentication);
+        checkAuthentication.checkAuthentication(authentication);
 
         if (!adRepository.existsById(adId)) {
             log.error("Ad not found");
@@ -102,7 +104,7 @@ public class CommentServiceImpl implements CommentService {
     public CommentDTO editComment(Long adId, Long commentId, CreateOrUpdateCommentDTO createOrUpdateCommentDTO,
                                   Authentication authentication) {
 
-        verificationAuthorization(authentication);
+        checkAuthentication.checkAuthentication(authentication);
 
         if (!adRepository.existsById(adId)) {
             log.error("Ad not found");
@@ -124,13 +126,6 @@ public class CommentServiceImpl implements CommentService {
 
     public boolean admin(Authentication authentication) {
         return authentication.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"));
-    }
-
-    public void verificationAuthorization(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            log.error("User not authorized");
-            throw new UnauthorizedException("User not authorized");
-            }
     }
 
     public Comment getComment(Long pk) {

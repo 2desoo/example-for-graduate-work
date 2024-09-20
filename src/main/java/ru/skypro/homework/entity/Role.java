@@ -1,5 +1,7 @@
 package ru.skypro.homework.entity;
 
+// Список ролей
 public enum Role {
-    USER, ADMIN
+    USER, // Пользователь
+    ADMIN // Админ
 }
