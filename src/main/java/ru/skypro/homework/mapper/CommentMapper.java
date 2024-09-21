@@ -8,6 +8,7 @@ import org.mapstruct.factory.Mappers;
 import ru.skypro.homework.dto.CommentDTO;
 import ru.skypro.homework.dto.CreateOrUpdateCommentDTO;
 import ru.skypro.homework.entity.Comment;
+import ru.skypro.homework.entity.User;
 
 /**
  * Сервис для установления соответствия из сущностей в DTO и обратно.
@@ -21,9 +22,9 @@ public interface CommentMapper {
      * В DTO {@link CommentDTO} из сущности {@link Comment}.
      */
     @Mapping(target = "author", source = "user.id")
-    @Mapping(target = "authorImage", source = "user.image.filePath")
+    @Mapping(target = "authorImage", expression = "java(\"/image/\" + user.getImage().getId())")
     @Mapping(target = "authorFirstName", source = "user.firstName")
-    CommentDTO commentToCommentDTO(Comment comment);
+    CommentDTO commentToCommentDTO(Comment comment, User user);
 
     /**
      * В сущность {@link Comment} из DTO {@link CommentDTO} .

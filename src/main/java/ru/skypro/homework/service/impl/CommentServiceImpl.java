@@ -3,6 +3,7 @@ package ru.skypro.homework.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.Authentication;
 import ru.skypro.homework.dto.CommentDTO;
@@ -13,7 +14,6 @@ import ru.skypro.homework.entity.Comment;
 import ru.skypro.homework.entity.User;
 import ru.skypro.homework.exception.EntityNotFoundException;
 import ru.skypro.homework.exception.ForbiddenException;
-import ru.skypro.homework.exception.UnauthorizedException;
 import ru.skypro.homework.mapper.CommentMapper;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.CommentRepository;
@@ -23,8 +23,8 @@ import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.utils.CheckAuthentication;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -44,13 +44,14 @@ public class CommentServiceImpl implements CommentService {
 
         if (adRepository.existsById(id)) {
 
-            List<CommentDTO> list = commentRepository.findCommentsByIdAd(id).stream()
-                    .map(CommentMapper.INSTANCE::commentToCommentDTO)
-                    .collect(Collectors.toList());
+            List<CommentDTO> commentDTOList = new ArrayList<>();
+            for (Comment comment : commentRepository.findCommentsByIdAd(id)) {
+                commentDTOList.add(CommentMapper.INSTANCE.commentToCommentDTO(comment, comment.getUser()));
+            }
 
             CommentsDTO commentsDTO = new CommentsDTO();
             commentsDTO.setCount(commentRepository.findCommentsByIdAd(id).size());
-            commentsDTO.setResults(list);
+            commentsDTO.setResults(commentDTOList);
 
             return commentsDTO;
         } else {
@@ -76,7 +77,7 @@ public class CommentServiceImpl implements CommentService {
             comment.setAd(ad);
             commentRepository.save(comment);
 
-            return CommentMapper.INSTANCE.commentToCommentDTO(comment);
+            return CommentMapper.INSTANCE.commentToCommentDTO(comment, user);
         } else {
             log.error("Ad not found");
             throw new EntityNotFoundException("Ad not found");
@@ -117,9 +118,11 @@ public class CommentServiceImpl implements CommentService {
 
         if (comment.getUser().getEmail().equals(authentication.getName()) || userService.isAdmin(authentication.getName())) {
 
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User user = userRepository.findByEmail(auth.getName());
             comment.setText(createOrUpdateCommentDTO.getText());
             commentRepository.save(comment);
-            return CommentMapper.INSTANCE.commentToCommentDTO(comment);
+            return CommentMapper.INSTANCE.commentToCommentDTO(comment, user);
 
         } else {
             throw new ForbiddenException("No authority");
