@@ -52,6 +52,7 @@ public class CommentController {
     public ResponseEntity<CommentsDTO> getComments(@PathVariable Long id,
                                                    Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
+
         try {
             return ResponseEntity.ok(commentService.getComments(id, authentication));
         } catch (UnauthorizedException e) {
@@ -79,6 +80,7 @@ public class CommentController {
                                                     @RequestBody CreateOrUpdateCommentDTO createOrUpdateCommentDTO,
                                                     Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
+
         try {
             return ResponseEntity.ok(commentService.createComment
                     (id, createOrUpdateCommentDTO, authentication));
@@ -104,6 +106,7 @@ public class CommentController {
                                                   @PathVariable Long commentId,
                                                   Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
+
         try {
             commentService.removalComment(adId, commentId, authentication);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -137,6 +140,7 @@ public class CommentController {
                                                   @RequestBody CreateOrUpdateCommentDTO createOrUpdateCommentDTO,
                                                   Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
+
         try {
             return ResponseEntity.ok(commentService.editComment(adId, commentId, createOrUpdateCommentDTO, authentication));
         } catch (UnauthorizedException e) {

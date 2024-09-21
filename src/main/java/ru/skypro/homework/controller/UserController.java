@@ -42,6 +42,7 @@ public class UserController {
     })
     public ResponseEntity<Void> setPassword(@RequestBody NewPasswordDTO newPasswordDTO, Authentication authentication) {
         log.warn("POST запрос на смену пароля, тело запроса: {}, метод контроллера: {}", newPasswordDTO, MethodLog.getMethodName());
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = repository.findByEmail(auth.getName());
         if (!encoder.matches(newPasswordDTO.getCurrentPassword(), user.getPassword())) {
@@ -50,6 +51,7 @@ public class UserController {
         }
         service.updatePassword(newPasswordDTO, authentication);
         log.info("Пароль обновлен");
+
         return ResponseEntity.ok().build();
     }
 
@@ -60,8 +62,10 @@ public class UserController {
     })
     public ResponseEntity<UserDTO> getUser(Authentication authentication) {
         log.warn("GET запрос на получение активного пользователя, метод контроллера: {}", MethodLog.getMethodName());
+
         UserDTO userDTO = service.getCurrentUser(authentication);
         log.info("Отправлен ответ: {}", userDTO);
+
         return ResponseEntity.ok(userDTO);
     }
 
@@ -72,10 +76,12 @@ public class UserController {
     })
     public ResponseEntity<UpdateUserDTO> updateUser(@RequestBody UpdateUserDTO updateUserDTO, Authentication authentication) {
         log.warn("PATCH запрос на обновление пользователя, тело запроса: {}, метод контроллера: {}", updateUserDTO, MethodLog.getMethodName());
+
         User user = repository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         service.updateUser(updateUserDTO, authentication);
         repository.save(user);
         log.info("Пользователь обновлен: {}", user);
+
         return ResponseEntity.ok(updateUserDTO);
     }
 
@@ -86,8 +92,11 @@ public class UserController {
     })
     public ResponseEntity<Void> updateUserImage(@RequestPart(value = "image") MultipartFile multipartFile, Authentication authentication) {
         log.warn("PATCH запрос на обновление аватара пользователя, тело запроса: MultipartFile image, метод контроллера: {}", MethodLog.getMethodName());
+
         service.updateUserImage(multipartFile, SecurityContextHolder.getContext().getAuthentication().getName(), authentication);
+
         log.info("Аватар пользователя обновлен");
+
         return ResponseEntity.ok().build();
     }
 }

@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "ad")
+@Table(name = "ads")
 public class Ad {
 
     @Id
@@ -26,6 +26,6 @@ public class Ad {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     User user; // создатель объявления
-    @OneToMany
+    @OneToMany(mappedBy = "ad", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<Comment> comments; // комментарии
 }

@@ -76,6 +76,7 @@ public class CommentServiceImpl implements CommentService {
             comment.setUser(user);
             comment.setAd(ad);
             commentRepository.save(comment);
+            log.info("Comment created: {}", comment);
 
             return CommentMapper.INSTANCE.commentToCommentDTO(comment, user);
         } else {
@@ -98,6 +99,7 @@ public class CommentServiceImpl implements CommentService {
         if (comment.getUser().getEmail().equals(authentication.getName()) || userService.isAdmin(authentication.getName())) {
 
             commentRepository.delete(comment);
+            log.info("Comment deleted: {}", comment);
 
         } else {
             throw new ForbiddenException("No authority");
@@ -122,6 +124,7 @@ public class CommentServiceImpl implements CommentService {
             User user = userRepository.findByEmail(auth.getName());
             comment.setText(createOrUpdateCommentDTO.getText());
             commentRepository.save(comment);
+            log.info("Comment edited: {}", comment);
             return CommentMapper.INSTANCE.commentToCommentDTO(comment, user);
 
         } else {

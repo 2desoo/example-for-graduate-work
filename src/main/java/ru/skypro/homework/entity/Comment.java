@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 // Сущность комментария для объявления
 @Entity
-@Table(name = "comment")
+@Table(name = "comments")
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)

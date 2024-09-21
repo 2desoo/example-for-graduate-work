@@ -48,10 +48,12 @@ public class ImageServiceImpl implements ImageService {
             imageNew.setData(image.getBytes());
             imageNew.setMediaType(image.getContentType());
             imageNew.setFileSize(image.getSize());
+            imageNew.setFilePath(photoDir + image.getOriginalFilename());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         imageRepository.save(imageNew);
+        log.info("Аватар добавлен: {}", imageNew);
         return imageNew;
     }
 

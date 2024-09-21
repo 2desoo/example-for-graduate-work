@@ -52,6 +52,7 @@ public class AdsController {
     @GetMapping()
     public ResponseEntity<?> getAllAds() {
         log.info("Использован метод {}", MethodLog.getMethodName());
+
         return ResponseEntity.ok(adService.getAllAds());
     }
 
@@ -82,6 +83,7 @@ public class AdsController {
                                    @RequestPart(name = "image") MultipartFile image,
                                    Authentication authentication) throws IOException {
         log.info("Использован метод {}", MethodLog.getMethodName());
+
         try {
             return new ResponseEntity<>(adService.addAd(properties, image, authentication), HttpStatus.CREATED);
         } catch (UnauthorizedException | AdminAccessException e) {
@@ -107,6 +109,7 @@ public class AdsController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getAds(@PathVariable Integer id, Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
+
         try {
             ExtendedAdDTO extendedAdDTO = adService.getById(id, authentication);
             return ResponseEntity.ok(extendedAdDTO);
@@ -139,6 +142,7 @@ public class AdsController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> removeAd(@PathVariable Integer id, Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
+
         try {
             adService.deleteAd(id, authentication);
             return ResponseEntity.noContent().build();
@@ -169,6 +173,7 @@ public class AdsController {
                                        @RequestBody CreateOrUpdateAdDTO createOrUpdateAdDTO,
                                        Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
+
         try {
             return ResponseEntity.ok(adService.updateAd(id, createOrUpdateAdDTO, authentication));
         } catch (UnauthorizedException e) {
@@ -196,6 +201,7 @@ public class AdsController {
     @GetMapping("/me")
     public ResponseEntity<?> getAdsMe(Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
+
         try {
             AdsDTO adsDTO = adService.getAdsMe(authentication);
             return ResponseEntity.ok(adsDTO);
@@ -226,6 +232,7 @@ public class AdsController {
                                          @RequestBody MultipartFile image,
                                          Authentication authentication) throws IOException {
         log.info("Использован метод {}", MethodLog.getMethodName());
+
         try {
             adService.updateImage(id, image, authentication);
             byte[] imageBytes = image.getBytes();
