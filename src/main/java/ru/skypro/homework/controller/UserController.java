@@ -21,6 +21,8 @@ import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.utils.MethodLog;
 
+import java.io.IOException;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -88,7 +90,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
     })
-    public ResponseEntity<Void> updateUserImage(@RequestPart(value = "image") MultipartFile multipartFile, Authentication authentication) {
+    public ResponseEntity<Void> updateUserImage(@RequestPart(value = "image") MultipartFile multipartFile, Authentication authentication) throws IOException {
         log.warn("PATCH запрос на обновление аватара пользователя, тело запроса: MultipartFile image, метод контроллера: {}", MethodLog.getMethodName());
 
         service.updateUserImage(multipartFile, SecurityContextHolder.getContext().getAuthentication().getName(), authentication);

@@ -1,5 +1,6 @@
 package ru.skypro.homework.service.impl;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPasswordDTO;
 import ru.skypro.homework.dto.UpdateUserDTO;
 import ru.skypro.homework.dto.UserDTO;
+import ru.skypro.homework.entity.Ad;
+import ru.skypro.homework.entity.Image;
 import ru.skypro.homework.entity.Role;
 import ru.skypro.homework.entity.User;
 import ru.skypro.homework.exception.IncorrectPasswordException;
@@ -23,6 +26,13 @@ import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.utils.CheckAuthentication;
 import ru.skypro.homework.utils.MethodLog;
 
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
+
+import static java.nio.file.StandardOpenOption.CREATE_NEW;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -33,6 +43,9 @@ public class UserServiceImpl implements UserService {
     private final UserMapper mapper;
     private final ImageService imageService;
     private final CheckAuthentication checkAuthentication;
+
+    @Value("${path.to.photo.folder}")
+    private String photoDir;
 
     public void updatePassword(NewPasswordDTO passwordDTO,Authentication authentication) {
         log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
@@ -90,7 +103,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    public void updateUserImage(MultipartFile image, String userName, Authentication authentication) {
+    public void updateUserImage(MultipartFile image, String userName, Authentication authentication) throws IOException {
         log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
 
         checkAuthentication.checkAuthentication(authentication);
@@ -100,23 +113,52 @@ public class UserServiceImpl implements UserService {
         if (user.getImage() == null) {
             log.info("Пользователь не имеет аватара");
 
-            user.setImage(imageService.addImage(image));
+            uploadImageForUser(user.getId(), image);
             log.info("Аватар добавлен");
-
-            repository.save(user);
             return;
         }
-        Long imageId = user.getImage().getId();
-        user.setImage(imageService.addImage(image));
-        log.info("Аватар обновлен");
-
-        imageService.deleteImage(imageId);
-        repository.save(user);
+        uploadImageForUser(user.getId(), image);
+        log.info("Аватар добавлен");
     }
 
     @Override
     public boolean isAdmin(String email) {
         User user = repository.findByEmail(email);
         return user != null && user.getRole().equals(Role.ADMIN);
+    }
+
+    public void uploadImageForUser(Long id, MultipartFile image) throws IOException {
+        log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
+
+        User user = repository.findById(id).get();
+        log.info("Получено объявление: {}", user);
+        Path filePath = Path.of(photoDir, user.getId() + "." + getExtension(image.getOriginalFilename()));
+        Files.createDirectories(filePath.getParent());
+        Files.deleteIfExists(filePath);
+        try (
+                InputStream is = image.getInputStream();
+                OutputStream os = Files.newOutputStream(filePath, CREATE_NEW);
+                BufferedInputStream bis = new BufferedInputStream(is, 1024);
+                BufferedOutputStream bos = new BufferedOutputStream(os, 1024);
+        ) {
+            bis.transferTo(bos);
+        }
+
+        Image image1 = Optional.ofNullable(user.getImage())
+                .orElse(new Image());
+
+        image1.setFilePath(filePath.toString());
+        image1.setFileSize(image.getSize());
+        image1.setMediaType(image.getContentType());
+        image1.setData(image.getBytes());
+        imageService.saveImage(image1);
+        log.info("Изображение сохранено: {}", image1);
+        user.setImage(image1);
+        repository.save(user);
+        log.info("Изображение объявления установлено: {}", user);
+    }
+
+    private String getExtension(String filename) {
+        return filename.substring(filename.lastIndexOf(".") + 1);
     }
 }
