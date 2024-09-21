@@ -78,6 +78,10 @@ public class CommentServiceImpl implements CommentService {
             commentRepository.save(comment);
             log.info("Comment created: {}", comment);
 
+            if (user.getImage() == null) {
+                log.warn("User {} does not have an image", user.getEmail());
+            }
+
             return CommentMapper.INSTANCE.commentToCommentDTO(comment, user);
         } else {
             log.error("Ad not found");

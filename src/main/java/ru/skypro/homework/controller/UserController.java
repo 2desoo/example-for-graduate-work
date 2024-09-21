@@ -64,7 +64,6 @@ public class UserController {
         log.warn("GET запрос на получение активного пользователя, метод контроллера: {}", MethodLog.getMethodName());
 
         UserDTO userDTO = service.getCurrentUser(authentication);
-        log.info("Отправлен ответ: {}", userDTO);
 
         return ResponseEntity.ok(userDTO);
     }
@@ -80,7 +79,6 @@ public class UserController {
         User user = repository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         service.updateUser(updateUserDTO, authentication);
         repository.save(user);
-        log.info("Пользователь обновлен: {}", user);
 
         return ResponseEntity.ok(updateUserDTO);
     }

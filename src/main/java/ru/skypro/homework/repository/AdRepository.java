@@ -9,6 +9,6 @@ import ru.skypro.homework.entity.Ad;
 @Repository
 public interface AdRepository extends JpaRepository<Ad, Long> {
 
-    @Query(value = "select * from ad a where a.pk =:id", nativeQuery = true)
+    @Query(value = "select * from ads a where a.pk =:id", nativeQuery = true)
     Ad findAdById(@Param("id") Long id);
 }

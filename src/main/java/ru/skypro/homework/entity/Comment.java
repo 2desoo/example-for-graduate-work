@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Table(name = "comments")
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"user", "ad"})
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 public class Comment {

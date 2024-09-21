@@ -34,7 +34,6 @@ public class AuthController {
     })
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        log.info("Получены данные для входа: {}", loginDTO);
 
         if (authService.login(loginDTO.getUsername(), loginDTO.getPassword())) {
             log.info("Авторизация прошла успешно");
@@ -52,7 +51,6 @@ public class AuthController {
     })
     public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO registerDTO) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-        log.info("Получены данные для регистрации: {}", registerDTO);
 
         if (authService.register(registerDTO)) {
             log.info("Регистрация прошла успешно");

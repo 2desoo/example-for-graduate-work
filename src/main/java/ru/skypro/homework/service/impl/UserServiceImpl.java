@@ -36,14 +36,12 @@ public class UserServiceImpl implements UserService {
 
     public void updatePassword(NewPasswordDTO passwordDTO,Authentication authentication) {
         log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
-        log.info("Получен тело запроса: {}", passwordDTO);
 
         checkAuthentication.checkAuthentication(authentication);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         User user = repository.findByEmail(auth.getName());
-        log.info("Получен пользователь: {}", user);
 
         if (user == null) {
             log.error("Пользователь не найден");
@@ -58,7 +56,6 @@ public class UserServiceImpl implements UserService {
         user.setPassword(hashedPassword);
 
         repository.save(user);
-        log.info("Пользователь обновлен: {}", user);
     }
 
     public UserDTO getCurrentUser(Authentication authentication) {
@@ -69,7 +66,6 @@ public class UserServiceImpl implements UserService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         User user = repository.findByEmail(auth.getName());
-        log.info("Получен пользователь: {}", user);
 
         return mapper.toUserDTO(user);
     }
@@ -87,7 +83,6 @@ public class UserServiceImpl implements UserService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         User user = repository.findByEmail(auth.getName());
-        log.info("Получен пользователь: {}", user);
 
         mapper.updateUserDTOToUser(updateUserDTO, user);
 
@@ -101,7 +96,6 @@ public class UserServiceImpl implements UserService {
         checkAuthentication.checkAuthentication(authentication);
 
         User user = repository.findByEmail(userName);
-        log.info("Получен пользователь: {}", user);
 
         if (user.getImage() == null) {
             log.info("Пользователь не имеет аватара");

@@ -12,7 +12,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"user", "comments"})
 @ToString(exclude = {"user", "comments"})
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "users")

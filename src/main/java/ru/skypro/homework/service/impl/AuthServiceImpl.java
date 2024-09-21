@@ -26,7 +26,6 @@ public class AuthServiceImpl implements AuthService {
         log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
 
         UserDetails userDetails = myUserDetailsService.loadUserByUsername(userName);
-        log.info("Получен пользователь: {}", userDetails);
         if (!encoder.matches(password, userDetails.getPassword())) {
             log.error("Incorrect password");
             throw new IncorrectPasswordException("Incorrect password");

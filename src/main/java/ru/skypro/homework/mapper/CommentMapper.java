@@ -22,7 +22,8 @@ public interface CommentMapper {
      * В DTO {@link CommentDTO} из сущности {@link Comment}.
      */
     @Mapping(target = "author", source = "user.id")
-    @Mapping(target = "authorImage", expression = "java(\"/image/\" + user.getImage().getId())")
+//    @Mapping(target = "authorImage", expression = "java(\"/image/\" + user.getImage().getId())")
+    @Mapping(target = "authorImage", expression = "java(user.getImage() != null ? \"/image/\" + user.getImage().getId() : \"\")")
     @Mapping(target = "authorFirstName", source = "user.firstName")
     CommentDTO commentToCommentDTO(Comment comment, User user);
 
