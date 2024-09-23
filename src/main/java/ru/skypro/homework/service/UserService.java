@@ -10,6 +10,8 @@ import ru.skypro.homework.entity.User;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.UserRepository;
 
+import java.io.IOException;
+
 public interface UserService {
 
     /**
@@ -47,7 +49,7 @@ public interface UserService {
      * @param userName - имя пользователя
      * @param authentication - аутентифицированный пользователь
      */
-    void updateUserImage(MultipartFile image, String userName, Authentication authentication);
+    void updateUserImage(MultipartFile image, String userName, Authentication authentication) throws IOException;
 
     /**
      * Поиск пользователя по его email

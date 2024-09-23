@@ -48,7 +48,7 @@ class UserServiceImplTest {
 
         when(repository.findByEmail(anyString())).thenReturn(mockUser);
 
-        service.updatePassword(mockPasswordDTO);
+        service.updatePassword(mockPasswordDTO, mockAuthentication);
 
         verify(repository).save(any());
     }
@@ -66,7 +66,7 @@ class UserServiceImplTest {
         SecurityContextHolder.setContext(mockSecurityContext);
         when(repository.findByEmail(anyString())).thenReturn(null);
 
-        assertThrows(UserNotFoundException.class, () -> service.updatePassword(mockPasswordDTO));
+        assertThrows(UserNotFoundException.class, () -> service.updatePassword(mockPasswordDTO, mockAuthentication));
     }
 
     @Test
@@ -74,7 +74,7 @@ class UserServiceImplTest {
         when(repository.findByEmail(anyString())).thenReturn(mockUser);
         when(mapper.toUserDTO(mockUser)).thenReturn(mockUserDTO);
 
-        UserDTO currentUser = service.getCurrentUser();
+        UserDTO currentUser = service.getCurrentUser(any());
 
         assertEquals(mockUser.getFirstName(),currentUser.getFirstName());
         assertEquals(mockUser.getEmail(),currentUser.getEmail());
