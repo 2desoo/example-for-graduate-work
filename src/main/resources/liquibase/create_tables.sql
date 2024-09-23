@@ -1,40 +1,6 @@
 -- formated sql
 
 -- changeset dubrovsky:1
-CREATE TABLE "users"
-(
-    ID         BIGSERIAL    NOT NULL PRIMARY KEY,
-    EMAIL      VARCHAR(255) NOT NULL UNIQUE,
-    PASSWORD   VARCHAR(255) NOT NULL,
-    FIRST_NAME VARCHAR(255) NOT NULL,
-    LAST_NAME  VARCHAR(255) NOT NULL,
-    PHONE      VARCHAR(255) NOT NULL,
-    ROLE       VARCHAR(255) NOT NULL,
-    IMAGE_ID   BIGINT
-);
-
--- changeset dubrovsky:2
-CREATE TABLE "ads"
-(
-    PK          BIGSERIAL        NOT NULL PRIMARY KEY,
-    IMAGE_ID    BIGSERIAL           NOT NULL,
-    PRICE       INTEGER NOT NULL,
-    TITLE       VARCHAR(255)     NOT NULL,
-    DESCRIPTION VARCHAR(255)     NOT NULL,
-    USER_ID     BIGINT           NOT NULL REFERENCES "users" (ID)
-);
-
--- changeset dubrovsky:3
-CREATE TABLE "comments"
-(
-    PK         BIGSERIAL    NOT NULL PRIMARY KEY,
-    CREATED_AT TIMESTAMP    NOT NULL,
-    TEXT       VARCHAR(255) NOT NULL,
-    USER_ID    BIGINT       NOT NULL REFERENCES "users" (ID),
-    AD_PK BIGINT NOT NULL REFERENCES "ads" (PK)
-);
-
--- changeset dubrovsky:4
 CREATE TABLE "images"
 (
     ID         BIGSERIAL    NOT NULL PRIMARY KEY,
@@ -44,3 +10,36 @@ CREATE TABLE "images"
     DATA       BYTEA        NOT NULL
 );
 
+-- changeset dubrovsky:2
+CREATE TABLE "users"
+(
+    ID         BIGSERIAL    NOT NULL PRIMARY KEY,
+    EMAIL      VARCHAR(255) NOT NULL UNIQUE,
+    PASSWORD   VARCHAR(255) NOT NULL,
+    FIRST_NAME VARCHAR(255) NOT NULL,
+    LAST_NAME  VARCHAR(255) NOT NULL,
+    PHONE      VARCHAR(255) NOT NULL,
+    ROLE       VARCHAR(255) NOT NULL,
+    IMAGE_ID   BIGINT REFERENCES "images"(ID)
+);
+
+-- changeset dubrovsky:3
+CREATE TABLE "ads"
+(
+    PK          BIGSERIAL        NOT NULL PRIMARY KEY,
+    IMAGE_ID    BIGSERIAL        REFERENCES "images"(ID),
+    PRICE       INTEGER NOT NULL,
+    TITLE       VARCHAR(255)     NOT NULL,
+    DESCRIPTION VARCHAR(255)     NOT NULL,
+    USER_ID     BIGINT           NOT NULL REFERENCES "users" (ID)
+);
+
+-- changeset dubrovsky:4
+CREATE TABLE "comments"
+(
+    PK         BIGSERIAL    NOT NULL PRIMARY KEY,
+    CREATED_AT TIMESTAMP    NOT NULL,
+    TEXT       VARCHAR(255) NOT NULL,
+    USER_ID    BIGINT       NOT NULL REFERENCES "users" (ID),
+    AD_PK BIGINT NOT NULL REFERENCES "ads" (PK)
+);
