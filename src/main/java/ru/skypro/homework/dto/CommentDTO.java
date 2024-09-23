@@ -1,11 +1,7 @@
 package ru.skypro.homework.dto;
 
-
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.experimental.FieldDefaults;
-
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,21 +10,25 @@ import java.time.LocalDateTime;
 
 // Data Transfer Object для комментария
 @Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommentDTO {
 
     @Schema(description = "Id автора комментария")
-    Long author;
+    private Long author;
+
     @Schema(description = "Ссылка на аватар комментария")
-    String authorImage;
+    private String authorImage;
+
     @Schema(description = "Имя создателя комментария")
-    String authorFirstName;
+    private String authorFirstName;
+
     @Schema(description = "Дата и время создания комментария в миллисекундах с 00:00:00 01.01.1970")
-    LocalDateTime createdAt;
+    private LocalDateTime createdAt;
+
     @Schema(description = "Id комментария")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long pk;
+    private Long pk;
+
     @Schema(description = "Текст комментария")
-    String text;
+    private String text;
 }

@@ -16,13 +16,13 @@ import ru.skypro.homework.entity.Image;
 import ru.skypro.homework.entity.Role;
 import ru.skypro.homework.exception.AccessRightsNotAvailableException;
 import ru.skypro.homework.exception.AdNotFoundException;
-import ru.skypro.homework.exception.AdminAccessException;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.service.AdService;
 import ru.skypro.homework.service.CommentService;
 import ru.skypro.homework.service.ImageService;
 import ru.skypro.homework.service.UserService;
+import ru.skypro.homework.utils.CheckAdmin;
 import ru.skypro.homework.utils.CheckAuthentication;
 import ru.skypro.homework.utils.MethodLog;
 
@@ -45,6 +45,7 @@ public class AdServiceImpl implements AdService {
     private final ImageService imageService;
     private final CommentService commentService;
     private final CheckAuthentication checkAuthentication;
+    private final CheckAdmin checkAdmin;
 
     @Value("${path.to.photo.folder}")
     private String photoDir;
@@ -64,7 +65,7 @@ public class AdServiceImpl implements AdService {
         log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
 
         checkAuthentication.checkAuthentication(authentication);
-        checkAdminAccess(authentication);
+        checkAdmin.isAdmin(authentication.getName());
 
         Ad ad = AdMapper.INSTANCE.createOrUpdateAdDTOToAd(createOrUpdateAdDTO);
         ad.setUser(userService.findByEmail(authentication.getName()));
@@ -81,11 +82,10 @@ public class AdServiceImpl implements AdService {
         log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
 
         checkAuthentication.checkAuthentication(authentication);
-        checkAdminAccess(authentication);
+        checkAdmin.isAdmin(authentication.getName());
 
         Optional<Ad> ad = findById(Long.valueOf(id));
         checkAdIsPresent(ad);
-        log.info("Получено объявление: {}", ad);
 
         return ad.map(AdMapper.INSTANCE::toExtendedAdDTO).orElse(null);
     }
@@ -133,7 +133,6 @@ public class AdServiceImpl implements AdService {
         checkAdIsPresent(foundAd);
 
         Ad ad = foundAd.get();
-        log.info("Получено объявление: {}", ad);
 
         if (isAdCreatorOrAdmin(ad, authentication)) {
             ad.setPrice(createOrUpdateAdDTO.getPrice());
@@ -154,7 +153,7 @@ public class AdServiceImpl implements AdService {
         log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
 
         checkAuthentication.checkAuthentication(authentication);
-        checkAdminAccess(authentication);
+        checkAdmin.isAdmin(authentication.getName());
 
         List<AdDTO> listOfAds = adRepository.findAll().stream()
                 .filter(ad -> (ad.getUser().getEmail()).equals(authentication.getName()))
@@ -189,7 +188,6 @@ public class AdServiceImpl implements AdService {
         log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
 
         Ad ad = findById(id.longValue()).get();
-        log.info("Получено объявление: {}", ad);
         Path filePath = Path.of(photoDir, ad.getPk() + "." + getExtension(image.getOriginalFilename()));
         Files.createDirectories(filePath.getParent());
         Files.deleteIfExists(filePath);
@@ -218,14 +216,6 @@ public class AdServiceImpl implements AdService {
 
     private String getExtension(String filename) {
         return filename.substring(filename.lastIndexOf(".") + 1);
-    }
-
-    @Override
-    public void checkAdminAccess(Authentication authentication) {
-        if (userService.isAdmin(authentication.getName())) {
-            log.error("Администратор не может выполнять это действие");
-            throw new AdminAccessException("Администратор не может выполнять это действие");
-        }
     }
 
     @Override

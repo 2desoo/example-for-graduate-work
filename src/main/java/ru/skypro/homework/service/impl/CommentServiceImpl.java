@@ -2,7 +2,6 @@ package ru.skypro.homework.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.Authentication;
@@ -19,7 +18,7 @@ import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.CommentService;
-import ru.skypro.homework.service.UserService;
+import ru.skypro.homework.utils.CheckAdmin;
 import ru.skypro.homework.utils.CheckAuthentication;
 
 import java.time.LocalDateTime;
@@ -36,7 +35,7 @@ public class CommentServiceImpl implements CommentService {
     private final AdRepository adRepository;
     private final UserRepository userRepository;
     private final CheckAuthentication checkAuthentication;
-    private final UserService userService;
+    private final CheckAdmin checkAdmin;
 
     public CommentsDTO getComments(Long id, Authentication authentication) {
 
@@ -100,7 +99,7 @@ public class CommentServiceImpl implements CommentService {
 
         Comment comment = getComment(commentId);
 
-        if (comment.getUser().getEmail().equals(authentication.getName()) || userService.isAdmin(authentication.getName())) {
+        if (comment.getUser().getEmail().equals(authentication.getName()) || checkAdmin.isAdmin(authentication.getName())) {
 
             commentRepository.delete(comment);
             log.info("Comment deleted: {}", comment);
@@ -122,7 +121,7 @@ public class CommentServiceImpl implements CommentService {
 
         Comment comment = getComment(commentId);
 
-        if (comment.getUser().getEmail().equals(authentication.getName()) || userService.isAdmin(authentication.getName())) {
+        if (comment.getUser().getEmail().equals(authentication.getName()) || checkAdmin.isAdmin(authentication.getName())) {
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = userRepository.findByEmail(auth.getName());
@@ -134,10 +133,6 @@ public class CommentServiceImpl implements CommentService {
         } else {
             throw new ForbiddenException("No authority");
         }
-    }
-
-    public boolean admin(Authentication authentication) {
-        return authentication.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"));
     }
 
     public Comment getComment(Long pk) {

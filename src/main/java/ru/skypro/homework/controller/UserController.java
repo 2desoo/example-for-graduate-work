@@ -16,7 +16,6 @@ import ru.skypro.homework.dto.NewPasswordDTO;
 import ru.skypro.homework.dto.UpdateUserDTO;
 import ru.skypro.homework.dto.UserDTO;
 import ru.skypro.homework.entity.User;
-import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.utils.MethodLog;
@@ -30,7 +29,6 @@ import ru.skypro.homework.utils.MethodLog;
 public class UserController {
 
     private final UserRepository repository;
-    private final UserMapper mapper;
     private final UserService service;
     private final PasswordEncoder encoder;
 
@@ -63,9 +61,7 @@ public class UserController {
     public ResponseEntity<UserDTO> getUser(Authentication authentication) {
         log.warn("GET запрос на получение активного пользователя, метод контроллера: {}", MethodLog.getMethodName());
 
-        UserDTO userDTO = service.getCurrentUser(authentication);
-
-        return ResponseEntity.ok(userDTO);
+        return ResponseEntity.ok(service.getCurrentUser(authentication));
     }
 
     @PatchMapping("/me")
@@ -73,14 +69,10 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
     })
-    public ResponseEntity<UpdateUserDTO> updateUser(@RequestBody UpdateUserDTO updateUserDTO, Authentication authentication) {
+    public ResponseEntity<UserDTO> updateUser(@RequestBody UpdateUserDTO updateUserDTO, Authentication authentication) {
         log.warn("PATCH запрос на обновление пользователя, тело запроса: {}, метод контроллера: {}", updateUserDTO, MethodLog.getMethodName());
 
-        User user = repository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        service.updateUser(updateUserDTO, authentication);
-        repository.save(user);
-
-        return ResponseEntity.ok(updateUserDTO);
+        return ResponseEntity.ok(service.updateUser(updateUserDTO, authentication));
     }
 
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -88,7 +80,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
     })
-    public ResponseEntity<Void> updateUserImage(@RequestPart(value = "image") MultipartFile multipartFile, Authentication authentication) {
+    public ResponseEntity<?> updateUserImage(@RequestPart(value = "image") MultipartFile multipartFile, Authentication authentication) {
         log.warn("PATCH запрос на обновление аватара пользователя, тело запроса: MultipartFile image, метод контроллера: {}", MethodLog.getMethodName());
 
         service.updateUserImage(multipartFile, SecurityContextHolder.getContext().getAuthentication().getName(), authentication);

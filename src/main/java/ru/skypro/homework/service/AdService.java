@@ -23,8 +23,8 @@ public interface AdService {
      * {@link AdRepository#save(Object)}
      * {@link ImageService#saveImage(Image)}
      * @param id - id для поиска объявления, у которого необходимо загрузить изображение
-     * @param image
-     * @throws IOException
+     * @param image - изображение
+     * @throws IOException - исключение
      */
     void uploadImageForAd(Integer id, MultipartFile image) throws IOException;
 
@@ -40,7 +40,6 @@ public interface AdService {
      * Создание объявления
      * Метод использует
      * {@link ru.skypro.homework.utils.CheckAuthentication#checkAuthentication(Authentication)}
-     * {@link AdService#checkAdminAccess(Authentication)}
      * {@link AdMapper#createOrUpdateAdDTOToAd(CreateOrUpdateAdDTO)}
      * {@link AdRepository#save(Object)}
      * {@link UserService#findByEmail(String)}
@@ -48,7 +47,7 @@ public interface AdService {
      * @param createOrUpdateAdDTO - DTO модель класса {@link CreateOrUpdateAdDTO}
      * @param image - изображение
      * @param authentication - авторизация пользователя
-     * @throws IOException
+     * @throws IOException - исключение
      * @return AdDTO - DTO модель класса {@link AdDTO}
      */
     AdDTO addAd(CreateOrUpdateAdDTO createOrUpdateAdDTO, MultipartFile image,
@@ -58,7 +57,6 @@ public interface AdService {
      * Получение информации об объявлении
      * Метод использует
      * {@link ru.skypro.homework.utils.CheckAuthentication#checkAuthentication(Authentication)}
-     * {@link AdService#checkAdminAccess(Authentication)}
      * {@link AdService#findById(Long)}
      * {@link AdService#checkAdIsPresent(Optional)}
      * @param id - id для поиска объявления
@@ -114,7 +112,6 @@ public interface AdService {
      * Получение объявлений авторизованного пользователя
      * Метод использует
      * {@link ru.skypro.homework.utils.CheckAuthentication#checkAuthentication(Authentication)}
-     * {@link AdService#checkAdminAccess(Authentication)}
      * {@link AdRepository#findAll()}
      * {@link AdMapper#adToAdDTO(Ad)}
      * @param authentication - авторизация пользователя
@@ -140,19 +137,10 @@ public interface AdService {
     /**
      * Поиск объявления по id
      * Метод использует {@link AdRepository#findById(Object)}
-     * @param id
+     * @param id - id объявления
      * @return Optional<Ad>
      */
     Optional<Ad> findById(Long id);
-
-    /**
-     * Метод проверяет, что пользователь имеет роль админа
-     * Если админ не имеет доступа к действию возникает
-     * {@link ru.skypro.homework.exception.AdminAccessException}
-     * с сообщением: "Администратор не может выполнять это действие"
-     * @param authentication - авторизация пользователя
-     */
-    void checkAdminAccess(Authentication authentication);
 
     /**
      * Метод проверяет, что объявление существует

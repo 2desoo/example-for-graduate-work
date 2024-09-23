@@ -23,6 +23,7 @@ import java.io.IOException;
 @Data
 public class ImageServiceImpl implements ImageService {
     private final ImageRepository imageRepository;
+
     @Value(value = "${path.to.image.folder}")
     private String photoDir;
 

@@ -15,9 +15,11 @@ public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // id изображения
+
     private long fileSize; // размер изображения
     private String filePath; // путь к изображению
     private String mediaType; // тип изображения
+
     @Lob
     @Type(type = "org.hibernate.type.ImageType")
     private byte[] data; // данные изображения

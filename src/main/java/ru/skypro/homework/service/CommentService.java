@@ -5,6 +5,7 @@ import ru.skypro.homework.dto.CommentDTO;
 import ru.skypro.homework.dto.CommentsDTO;
 import ru.skypro.homework.dto.CreateOrUpdateCommentDTO;
 import ru.skypro.homework.entity.Comment;
+import ru.skypro.homework.entity.User;
 import ru.skypro.homework.repository.CommentRepository;
 
 /**
@@ -21,7 +22,7 @@ public interface CommentService {
      * @return {@link CommentsDTO} список комментариев к объявлению.
      * @throws ru.skypro.homework.exception.EntityNotFoundException Если объявления существует, то создается List для {@link CommentDTO} где осуществляется поиск комментариев,
      *                                                              которые относятся к объявлению с помощью {@link ru.skypro.homework.repository.CommentRepository#findCommentsByIdAd(Long id)}
-     *                                                              найденные комментария с помощью {@link ru.skypro.homework.mapper.CommentMapper#commentToCommentDTO(Comment)}
+     *                                                              найденные комментария с помощью {@link ru.skypro.homework.mapper.CommentMapper#commentToCommentDTO(Comment, User)}
      *                                                              преобразуется в {@link CommentDTO} и эти DTO уже добавляются в List.
      *                                                              После этого создается {@link CommentsDTO} и в него добавляем наш List.
      */
@@ -35,7 +36,7 @@ public interface CommentService {
      * @param authentication идентифицируем пользователя, который создает комментарий
      *                       С помощью {@link ru.skypro.homework.repository.AdRepository#existsById(Object id)}
      *                       Мы проверяем существует ли это объявления, если такого объявления не существует, срабатывает исключение
-     * @return {@link CommentDTO} используя {@link ru.skypro.homework.mapper.CommentMapper#commentToCommentDTO(Comment)}
+     * @return {@link CommentDTO} используя {@link ru.skypro.homework.mapper.CommentMapper#commentToCommentDTO(Comment, User)}
      * @throws ru.skypro.homework.exception.EntityNotFoundException С помощью {@link ru.skypro.homework.repository.UserRepository#findByEmail(String)} идентифицируем автора комментария.
      *                                                              {@link ru.skypro.homework.repository.AdRepository#findById(Object)} идентифицируем объявления к которому будет писаться комментарий.
      *                                                              Создаем {@link Comment} используя {@link ru.skypro.homework.mapper.CommentMapper#createOrUpdateCommentDTOToComment(CreateOrUpdateCommentDTO)}
@@ -63,7 +64,7 @@ public interface CommentService {
      * @param createOrUpdateCommentDTO это {@link CreateOrUpdateCommentDTO} в котором будем принимать текст
      *                                 С помощью {@link ru.skypro.homework.repository.CommentRepository#existsById(Object)}
      *                                 Мы проверяем существует ли этот комментарий, если такого комментария не существует то, срабатывает исключение
-     * @return {@link CommentDTO} используя {@link ru.skypro.homework.mapper.CommentMapper#commentToCommentDTO(Comment)}
+     * @return {@link CommentDTO} используя {@link ru.skypro.homework.mapper.CommentMapper#commentDTOToComment(CommentDTO)}
      * @throws ru.skypro.homework.exception.EntityNotFoundException используя метод {@link ru.skypro.homework.service.impl.CommentServiceImpl#getComment(Long)} мы находим комментарий,
      *                                                              который будем изменять.
      *                                                              С помощью {@link ru.skypro.homework.repository.CommentRepository#save(Object)} сохраняем измененный комментарий
@@ -75,14 +76,6 @@ public interface CommentService {
      * Метод использует {@link CommentRepository#deleteAll()}
      */
     void deleteAll();
-
-    /**
-     * Метод проверки на админа
-     *
-     * @param authentication
-     * @return boolean
-     */
-    boolean admin(Authentication authentication);
 
     /**
      * Метод получения комментария по идентификатору

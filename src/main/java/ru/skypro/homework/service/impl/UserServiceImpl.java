@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPasswordDTO;
 import ru.skypro.homework.dto.UpdateUserDTO;
 import ru.skypro.homework.dto.UserDTO;
-import ru.skypro.homework.entity.Role;
 import ru.skypro.homework.entity.User;
 import ru.skypro.homework.exception.IncorrectPasswordException;
 import ru.skypro.homework.exception.UserNotFoundException;
@@ -112,11 +111,5 @@ public class UserServiceImpl implements UserService {
 
         imageService.deleteImage(imageId);
         repository.save(user);
-    }
-
-    @Override
-    public boolean isAdmin(String email) {
-        User user = repository.findByEmail(email);
-        return user != null && user.getRole().equals(Role.ADMIN);
     }
 }

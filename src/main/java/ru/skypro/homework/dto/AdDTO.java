@@ -1,22 +1,23 @@
 package ru.skypro.homework.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.experimental.FieldDefaults;
 
 // Data Transfer Object для объявления
 @Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class AdDTO {
     @Schema(description = "id объявления")
-    Long pk;
+    private Long pk;
+
     @Schema(description = "id автора объявления")
-    Integer author;
+    private Integer author;
+
     @Schema(description = "ссылка на картинку объявления")
-    String image;
+    private String image;
+
     @Schema(description = "цена объявления")
-    Integer price;
+    private Integer price;
+
     @Schema(description = "заголовок объявления")
-    String title;
+    private String title;
 }

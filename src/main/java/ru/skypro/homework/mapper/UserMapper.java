@@ -27,6 +27,4 @@ public interface UserMapper {
     @Mapping(target = "ads", ignore = true)
     @Mapping(target = "comments", ignore = true)
     void updateUserDTOToUser(UpdateUserDTO updateUserDTO, @MappingTarget User user);
-
-    UpdateUserDTO userToUpdateUserDTO(User user);
 }

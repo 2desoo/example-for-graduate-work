@@ -1,8 +1,6 @@
 package ru.skypro.homework.entity;
 
-
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -13,22 +11,21 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = {"user", "ad"})
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long pk; // id комментария
+    private Long pk; // id комментария
 
-    LocalDateTime createdAt; // время создания комментария
-    String text; // текст комментария
+    private LocalDateTime createdAt; // время создания комментария
+    private String text; // текст комментария
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    User user; // создатель комментария
+    private User user; // создатель комментария
 
     @ManyToOne
     @JoinColumn(name = "ad_pk", nullable = false)
-    Ad ad; // объявление, к которому относится комментарий
+    private Ad ad; // объявление, к которому относится комментарий
 }
