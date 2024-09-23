@@ -69,6 +69,7 @@ public class AdServiceImpl implements AdService {
 
         Ad ad = AdMapper.INSTANCE.createOrUpdateAdDTOToAd(createOrUpdateAdDTO);
         ad.setUser(userService.findByEmail(authentication.getName()));
+        ad.setImage(imageService.addImage(image));
         adRepository.save(ad);
         log.info("Объявление сохранено: {}", ad);
 
