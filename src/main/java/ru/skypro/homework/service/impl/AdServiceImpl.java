@@ -12,16 +12,13 @@ import ru.skypro.homework.dto.AdsDTO;
 import ru.skypro.homework.dto.CreateOrUpdateAdDTO;
 import ru.skypro.homework.dto.ExtendedAdDTO;
 import ru.skypro.homework.entity.Ad;
-import ru.skypro.homework.entity.Image;
 import ru.skypro.homework.entity.Role;
 import ru.skypro.homework.entity.User;
 import ru.skypro.homework.exception.AccessRightsNotAvailableException;
 import ru.skypro.homework.exception.AdNotFoundException;
-import ru.skypro.homework.exception.AdminAccessException;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.service.AdService;
-import ru.skypro.homework.service.CommentService;
 import ru.skypro.homework.service.ImageService;
 import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.utils.CheckAdmin;
@@ -29,14 +26,10 @@ import ru.skypro.homework.utils.CheckAuthentication;
 import ru.skypro.homework.utils.MethodLog;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +39,6 @@ public class AdServiceImpl implements AdService {
     private final AdRepository adRepository;
     private final UserService userService;
     private final ImageService imageService;
-    private final CommentService commentService;
     private final CheckAuthentication checkAuthentication;
     private final CheckAdmin checkAdmin;
 
@@ -74,7 +66,6 @@ public class AdServiceImpl implements AdService {
         ad.setUser(userService.findByEmail(authentication.getName()));
         ad.setImage(imageService.addImage(image));
         adRepository.save(ad);
-        log.info("Объявление сохранено: {}", ad);
 
         uploadImageForAd(ad.getPk().intValue(), image);
         return AdMapper.INSTANCE.adToAdDTO(ad);
@@ -135,7 +126,7 @@ public class AdServiceImpl implements AdService {
             ad.setDescription(createOrUpdateAdDTO.getDescription());
 
             adRepository.save(ad);
-            log.info("Объявление сохранено: {}", ad);
+
             return AdMapper.INSTANCE.adToAdDTO(ad);
         } else {
             log.error("Отсутствует доступ к объявлению");
