@@ -22,8 +22,8 @@ import ru.skypro.homework.utils.CheckAdmin;
 import ru.skypro.homework.utils.CheckAuthentication;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -43,18 +43,17 @@ public class CommentServiceImpl implements CommentService {
 
         if (adRepository.existsById(id)) {
 
-            List<CommentDTO> commentDTOList = new ArrayList<>();
-            for (Comment comment : commentRepository.findCommentsByIdAd(id)) {
-                commentDTOList.add(CommentMapper.INSTANCE.commentToCommentDTO(comment, comment.getUser()));
-            }
+            List<CommentDTO> list = commentRepository.findCommentsByIdAd(id).stream()
+                    .map(comment -> CommentMapper.INSTANCE.commentToCommentDTO(comment, comment.getUser()))
+                    .collect(Collectors.toList());
 
             CommentsDTO commentsDTO = new CommentsDTO();
-            commentsDTO.setCount(commentRepository.findCommentsByIdAd(id).size());
-            commentsDTO.setResults(commentDTOList);
+            commentsDTO.setCount(list.size());
+            commentsDTO.setResults(list);
 
             return commentsDTO;
         } else {
-            log.error("Ad not found");
+            log.warn("Ad not found");
             throw new EntityNotFoundException("Ad not found");
         }
     }
@@ -75,15 +74,10 @@ public class CommentServiceImpl implements CommentService {
             comment.setUser(user);
             comment.setAd(ad);
             commentRepository.save(comment);
-            log.info("Comment created: {}", comment);
-
-            if (user.getImage() == null) {
-                log.warn("User {} does not have an image", user.getEmail());
-            }
 
             return CommentMapper.INSTANCE.commentToCommentDTO(comment, user);
         } else {
-            log.error("Ad not found");
+            log.warn("Ad not found");
             throw new EntityNotFoundException("Ad not found");
         }
     }
@@ -93,16 +87,15 @@ public class CommentServiceImpl implements CommentService {
         checkAuthentication.checkAuthentication(authentication);
 
         if (!adRepository.existsById(adId)) {
-            log.error("Ad not found");
+            log.warn("Ad not found");
             throw new EntityNotFoundException("Ad not found");
         }
 
         Comment comment = getComment(commentId);
 
-        if (comment.getUser().getEmail().equals(authentication.getName()) || checkAdmin.isAdmin(authentication.getName())) {
+        if (authorizationToPermission(comment, authentication)) {
 
             commentRepository.delete(comment);
-            log.info("Comment deleted: {}", comment);
 
         } else {
             throw new ForbiddenException("No authority");
@@ -115,19 +108,18 @@ public class CommentServiceImpl implements CommentService {
         checkAuthentication.checkAuthentication(authentication);
 
         if (!adRepository.existsById(adId)) {
-            log.error("Ad not found");
+            log.warn("Ad not found");
             throw new EntityNotFoundException("Ad not found");
         }
 
         Comment comment = getComment(commentId);
 
-        if (comment.getUser().getEmail().equals(authentication.getName()) || checkAdmin.isAdmin(authentication.getName())) {
+        if (authorizationToPermission(comment, authentication)) {
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = userRepository.findByEmail(auth.getName());
             comment.setText(createOrUpdateCommentDTO.getText());
             commentRepository.save(comment);
-            log.info("Comment edited: {}", comment);
             return CommentMapper.INSTANCE.commentToCommentDTO(comment, user);
 
         } else {
@@ -142,5 +134,9 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void deleteAll() {
         commentRepository.deleteAll();
+    }
+
+    private boolean authorizationToPermission(Comment comment, Authentication authentication) {
+        return comment.getUser().getEmail().equals(authentication.getName()) || checkAdmin.isAdmin(authentication.getName());
     }
 }

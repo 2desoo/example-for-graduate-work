@@ -25,8 +25,6 @@ public class CommentDTO {
     private LocalDateTime createdAt;
 
     @Schema(description = "Id комментария")
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pk;
 
     @Schema(description = "Текст комментария")
