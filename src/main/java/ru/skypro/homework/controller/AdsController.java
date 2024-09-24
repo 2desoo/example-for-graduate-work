@@ -20,10 +20,6 @@ import ru.skypro.homework.dto.AdDTO;
 import ru.skypro.homework.dto.AdsDTO;
 import ru.skypro.homework.dto.CreateOrUpdateAdDTO;
 import ru.skypro.homework.dto.ExtendedAdDTO;
-import ru.skypro.homework.exception.AccessRightsNotAvailableException;
-import ru.skypro.homework.exception.AdNotFoundException;
-import ru.skypro.homework.exception.AdminAccessException;
-import ru.skypro.homework.exception.UnauthorizedException;
 import ru.skypro.homework.service.AdService;
 import ru.skypro.homework.utils.MethodLog;
 
@@ -84,11 +80,7 @@ public class AdsController {
                                    Authentication authentication) throws IOException {
         log.info("Использован метод {}", MethodLog.getMethodName());
 
-        try {
-            return new ResponseEntity<>(adService.addAd(properties, image, authentication), HttpStatus.CREATED);
-        } catch (UnauthorizedException | AdminAccessException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
+        return new ResponseEntity<>(adService.addAd(properties, image, authentication), HttpStatus.CREATED);
     }
 
 
@@ -110,14 +102,8 @@ public class AdsController {
     public ResponseEntity<?> getAds(@PathVariable Integer id, Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
 
-        try {
-            ExtendedAdDTO extendedAdDTO = adService.getById(id, authentication);
-            return ResponseEntity.ok(extendedAdDTO);
-        } catch (UnauthorizedException | AdminAccessException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        } catch (AdNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        ExtendedAdDTO extendedAdDTO = adService.getById(id, authentication);
+        return ResponseEntity.ok(extendedAdDTO);
     }
 
     @Operation(
@@ -143,16 +129,8 @@ public class AdsController {
     public ResponseEntity<?> removeAd(@PathVariable Integer id, Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
 
-        try {
-            adService.deleteAd(id, authentication);
-            return ResponseEntity.noContent().build();
-        } catch (UnauthorizedException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        } catch (AdNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (AccessRightsNotAvailableException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        adService.deleteAd(id, authentication);
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(
@@ -174,15 +152,7 @@ public class AdsController {
                                        Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
 
-        try {
-            return ResponseEntity.ok(adService.updateAd(id, createOrUpdateAdDTO, authentication));
-        } catch (UnauthorizedException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        } catch (AdNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (AccessRightsNotAvailableException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        return ResponseEntity.ok(adService.updateAd(id, createOrUpdateAdDTO, authentication));
     }
 
     @Operation(
@@ -197,17 +167,12 @@ public class AdsController {
                     @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
             }
     )
-
     @GetMapping("/me")
     public ResponseEntity<?> getAdsMe(Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
 
-        try {
-            AdsDTO adsDTO = adService.getAdsMe(authentication);
-            return ResponseEntity.ok(adsDTO);
-        } catch (UnauthorizedException | AdminAccessException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
+        AdsDTO adsDTO = adService.getAdsMe(authentication);
+        return ResponseEntity.ok(adsDTO);
     }
 
     @Operation(
@@ -233,21 +198,12 @@ public class AdsController {
                                          Authentication authentication) throws IOException {
         log.info("Использован метод {}", MethodLog.getMethodName());
 
-        try {
-            adService.updateImage(id, image, authentication);
-            byte[] imageBytes = image.getBytes();
+        adService.updateImage(id, image, authentication);
+        byte[] imageBytes = image.getBytes();
 
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .body(imageBytes);
-        } catch (UnauthorizedException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        } catch (AdNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (AccessRightsNotAvailableException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(imageBytes);
     }
 
 }

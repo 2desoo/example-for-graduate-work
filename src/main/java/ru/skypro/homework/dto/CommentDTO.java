@@ -3,9 +3,6 @@ package ru.skypro.homework.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import java.time.LocalDateTime;
 
 // Data Transfer Object для комментария
@@ -25,8 +22,6 @@ public class CommentDTO {
     private LocalDateTime createdAt;
 
     @Schema(description = "Id комментария")
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pk;
 
     @Schema(description = "Текст комментария")

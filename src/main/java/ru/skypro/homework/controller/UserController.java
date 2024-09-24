@@ -9,14 +9,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPasswordDTO;
 import ru.skypro.homework.dto.UpdateUserDTO;
 import ru.skypro.homework.dto.UserDTO;
-import ru.skypro.homework.entity.User;
-import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.utils.MethodLog;
 
@@ -30,9 +27,7 @@ import java.io.IOException;
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserRepository repository;
     private final UserService service;
-    private final PasswordEncoder encoder;
 
     @PostMapping("/set_password")
     @Operation(summary = "Обновление пароля", responses = {
@@ -40,18 +35,10 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "403", description = "Forbidden")
     })
-    public ResponseEntity<Void> setPassword(@RequestBody NewPasswordDTO newPasswordDTO, Authentication authentication) {
+    public ResponseEntity<?> setPassword(@RequestBody NewPasswordDTO newPasswordDTO, Authentication authentication) {
         log.warn("POST запрос на смену пароля, тело запроса: {}, метод контроллера: {}", newPasswordDTO, MethodLog.getMethodName());
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = repository.findByEmail(auth.getName());
-        if (!encoder.matches(newPasswordDTO.getCurrentPassword(), user.getPassword())) {
-            log.error("Неверный пароль");
-            return ResponseEntity.status(403).build();
-        }
         service.updatePassword(newPasswordDTO, authentication);
-        log.info("Пароль обновлен");
-
         return ResponseEntity.ok().build();
     }
 
