@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import ru.skypro.homework.entity.Image;
 import ru.skypro.homework.repository.ImageRepository;
+import ru.skypro.homework.service.ImageService;
 
 import java.util.Optional;
 
@@ -19,18 +20,10 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:3000")
 public class ImageController {
 
-    private final ImageRepository repository;
+    private final ImageService service;
 
     @GetMapping("/image/{id}")
-    public ResponseEntity<byte[]> getImage (@PathVariable Long id) {
-        Optional<Image> image = repository.findById(id);
-        if (image.isEmpty()) {
-            return
-                    ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType(image.get().getMediaType()));
-        headers.setContentLength(image.get().getData().length);
-        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(image.get().getData());
+    public ResponseEntity<byte[]> getImage(@PathVariable Long id) {
+        return service.getImage(id);
     }
 }

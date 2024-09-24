@@ -18,7 +18,7 @@ public class Ad {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pk; // id объявления
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Image image; // изображение
 
     private Integer price; // цена
@@ -29,6 +29,6 @@ public class Ad {
     @JoinColumn(name = "user_id", nullable = false)
     private User user; // создатель объявления
 
-    @OneToMany(mappedBy = "ad", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "ad", fetch = FetchType.LAZY,  cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments; // комментарии
 }

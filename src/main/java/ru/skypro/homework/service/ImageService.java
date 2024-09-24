@@ -3,7 +3,10 @@ package ru.skypro.homework.service;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.dto.ImageDTO;
 import ru.skypro.homework.entity.Image;
+
+import java.io.IOException;
 
 public interface ImageService {
 
@@ -34,7 +37,9 @@ public interface ImageService {
     /**
      * Добавление изображения в базу данных
      * Метод использует {@link JpaRepository#save(Object)}
-     * @param image - Image entity
+     * @param imageDTO - Image DTO
      */
-    void saveImage(Image image);
+    void saveImage(ImageDTO imageDTO);
+
+    void uploadAd(Long adId, MultipartFile file) throws IOException;
 }
