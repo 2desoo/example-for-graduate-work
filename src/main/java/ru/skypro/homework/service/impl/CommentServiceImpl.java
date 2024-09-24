@@ -53,7 +53,6 @@ public class CommentServiceImpl implements CommentService {
 
             return commentsDTO;
         } else {
-            log.warn("Ad not found");
             throw new EntityNotFoundException("Ad not found");
         }
     }
@@ -77,7 +76,6 @@ public class CommentServiceImpl implements CommentService {
 
             return CommentMapper.INSTANCE.commentToCommentDTO(comment, user);
         } else {
-            log.warn("Ad not found");
             throw new EntityNotFoundException("Ad not found");
         }
     }
@@ -87,7 +85,6 @@ public class CommentServiceImpl implements CommentService {
         checkAuthentication.checkAuthentication(authentication);
 
         if (!adRepository.existsById(adId)) {
-            log.warn("Ad not found");
             throw new EntityNotFoundException("Ad not found");
         }
 
@@ -108,7 +105,6 @@ public class CommentServiceImpl implements CommentService {
         checkAuthentication.checkAuthentication(authentication);
 
         if (!adRepository.existsById(adId)) {
-            log.warn("Ad not found");
             throw new EntityNotFoundException("Ad not found");
         }
 
