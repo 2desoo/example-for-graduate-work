@@ -12,8 +12,8 @@ import ru.skypro.homework.dto.AdsDTO;
 import ru.skypro.homework.dto.CreateOrUpdateAdDTO;
 import ru.skypro.homework.dto.ExtendedAdDTO;
 import ru.skypro.homework.entity.Ad;
+import ru.skypro.homework.entity.Image;
 import ru.skypro.homework.entity.Role;
-import ru.skypro.homework.entity.User;
 import ru.skypro.homework.exception.AccessRightsNotAvailableException;
 import ru.skypro.homework.exception.AdNotFoundException;
 import ru.skypro.homework.mapper.AdMapper;
@@ -27,10 +27,13 @@ import ru.skypro.homework.utils.CheckAuthentication;
 import ru.skypro.homework.utils.MethodLog;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
 @Service
 @RequiredArgsConstructor
@@ -40,8 +43,12 @@ public class AdServiceImpl implements AdService {
     private final AdRepository adRepository;
     private final UserService userService;
     private final ImageService imageService;
+    private final CommentService commentService;
     private final CheckAuthentication checkAuthentication;
     private final CheckAdmin checkAdmin;
+
+    @Value("${path.to.photo.folder}")
+    private String photoDir;
 
     @Override
     public AdsDTO getAllAds() {
@@ -64,7 +71,6 @@ public class AdServiceImpl implements AdService {
         ad.setUser(userService.findByEmail(authentication.getName()));
         ad.setImage(imageService.addImage(image));
         adRepository.save(ad);
-        log.info("Объявление сохранено: {}", ad);
 
         uploadImageForAd(ad.getPk().intValue(), image);
         return AdMapper.INSTANCE.adToAdDTO(ad);
@@ -95,9 +101,17 @@ public class AdServiceImpl implements AdService {
         Ad ad = foundAd.get();
 
         if (isAdCreatorOrAdmin(ad, authentication)) {
+            adRepository.getReferenceById(Long.valueOf(id))
+                    .getComments().forEach(comment -> commentService.deleteAll());
+            log.info("Комментарии удалены");
+
+            imageService.deleteImage(ad.getImage().getId());
+            log.info("Изображение удалено");
+
             adRepository.deleteById(id.longValue());
             log.info("Объявление удалено");
         } else {
+            log.error("Отсутствует доступ к объявлению");
             throw new AccessRightsNotAvailableException("Отсутствует доступ к объявлению");
         }
     }
@@ -125,7 +139,6 @@ public class AdServiceImpl implements AdService {
             ad.setDescription(createOrUpdateAdDTO.getDescription());
 
             adRepository.save(ad);
-            log.info("Объявление сохранено: {}", ad);
             return AdMapper.INSTANCE.adToAdDTO(ad);
         } else {
             log.error("Отсутствует доступ к объявлению");
@@ -138,12 +151,12 @@ public class AdServiceImpl implements AdService {
         log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
 
         checkAuthentication.checkAuthentication(authentication);
-        checkAdmin.checkAdminAccess(authentication);
+        checkAdmin.isAdmin(authentication.getName());
 
-        User user = userService.findByEmail(authentication.getName());
-        List<AdDTO> result = new ArrayList<>();
-        adRepository.findAllByUser(user).forEach(u -> result.add(AdMapper.INSTANCE.adToAdDTO(u)));
-        return new AdsDTO(result.size(), result);
+        List<AdDTO> listOfAds = adRepository.findAll().stream()
+                .filter(ad -> (ad.getUser().getEmail()).equals(authentication.getName()))
+                .map(AdMapper.INSTANCE::adToAdDTO).collect(Collectors.toList());
+        return new AdsDTO(listOfAds.size(), listOfAds);
     }
 
     @Override
@@ -172,10 +185,33 @@ public class AdServiceImpl implements AdService {
     public void uploadImageForAd(Integer id, MultipartFile image) throws IOException {
         log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
 
-        Ad ad = adRepository.findById(id.longValue()).get();
-        imageService.uploadAd(ad.getPk().longValue(), image);
+        Ad ad = findById(id.longValue()).get();
+        Path filePath = Path.of(photoDir, ad.getPk() + "." + getExtension(image.getOriginalFilename()));
+        Files.createDirectories(filePath.getParent());
+        Files.deleteIfExists(filePath);
+        try (
+                InputStream is = image.getInputStream();
+                OutputStream os = Files.newOutputStream(filePath, CREATE_NEW);
+                BufferedInputStream bis = new BufferedInputStream(is, 1024);
+                BufferedOutputStream bos = new BufferedOutputStream(os, 1024);
+        ) {
+            bis.transferTo(bos);
+        }
+
+        Image image1 = Optional.ofNullable(ad.getImage())
+                .orElse(new Image());
+
+        image1.setFilePath(filePath.toString());
+        image1.setFileSize(image.getSize());
+        image1.setMediaType(image.getContentType());
+        image1.setData(image.getBytes());
+        ad.setImage(image1);
+        ad.setImage(image1);
         adRepository.save(ad);
-        log.info("Изображение объявления установлено: {}", ad);
+    }
+
+    private String getExtension(String filename) {
+        return filename.substring(filename.lastIndexOf(".") + 1);
     }
 
     @Override

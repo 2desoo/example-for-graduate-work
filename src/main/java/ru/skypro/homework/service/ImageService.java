@@ -5,8 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.entity.Image;
 
-import java.io.IOException;
-
 public interface ImageService {
 
     /**
@@ -32,12 +30,4 @@ public interface ImageService {
      * @param imageId - id изображения
      */
     void deleteImage(Long imageId);
-
-    /**
-     * Загрузка изображения объявления
-     * @param adId - id объявления
-     * @param file - изображение
-     * @throws IOException - исключение
-     */
-    void uploadAd(Long adId, MultipartFile file) throws IOException;
 }
