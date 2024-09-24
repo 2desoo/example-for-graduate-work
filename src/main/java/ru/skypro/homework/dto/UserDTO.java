@@ -18,10 +18,10 @@ public class UserDTO {
     @JsonProperty("email")
     private String email; // почта пользователя
 
-    @JsonProperty("first_name")
+    @JsonProperty("firstName")
     private String firstName; // имя пользователя
 
-    @JsonProperty("last_name")
+    @JsonProperty("lastName")
     private String lastName; // фамилия пользователя
 
     @JsonProperty("phone")
