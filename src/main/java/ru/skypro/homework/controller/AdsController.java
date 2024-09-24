@@ -20,10 +20,6 @@ import ru.skypro.homework.dto.AdDTO;
 import ru.skypro.homework.dto.AdsDTO;
 import ru.skypro.homework.dto.CreateOrUpdateAdDTO;
 import ru.skypro.homework.dto.ExtendedAdDTO;
-import ru.skypro.homework.exception.AccessRightsNotAvailableException;
-import ru.skypro.homework.exception.AdNotFoundException;
-import ru.skypro.homework.exception.AdminAccessException;
-import ru.skypro.homework.exception.UnauthorizedException;
 import ru.skypro.homework.service.AdService;
 import ru.skypro.homework.utils.MethodLog;
 

@@ -14,6 +14,7 @@ import ru.skypro.homework.dto.UpdateUserDTO;
 import ru.skypro.homework.dto.UserDTO;
 import ru.skypro.homework.entity.User;
 import ru.skypro.homework.exception.IncorrectPasswordException;
+import ru.skypro.homework.exception.UnauthorizedException;
 import ru.skypro.homework.exception.UserNotFoundException;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.UserRepository;
@@ -45,8 +46,7 @@ public class UserServiceImpl implements UserService {
         User user = repository.findByEmail(auth.getName());
 
         if (user == null) {
-            log.error("Пользователь не найден");
-            throw new UserNotFoundException("Пользователь не найден");
+            throw new UnauthorizedException("Пользователь не авторизирован");
         }
 
         if (!encoder.matches(passwordDTO.getCurrentPassword(), user.getPassword())) {
@@ -55,7 +55,6 @@ public class UserServiceImpl implements UserService {
 
         String hashedPassword = encoder.encode(passwordDTO.getNewPassword());
         user.setPassword(hashedPassword);
-
         repository.save(user);
     }
 

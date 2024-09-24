@@ -39,6 +39,9 @@ public class ImageServiceImpl implements ImageService {
     @Value(value = "${imageAd.dir.path}")
     private String imageAd;
 
+    @Value(value = "${imageAd.dir.path}")
+    private String imageAd;
+
     @Override
     public byte[] getImage(Long id) {
         Image image = imageRepository.findById(id).orElseThrow(ImageNotFoundException::new);
@@ -115,6 +118,7 @@ public class ImageServiceImpl implements ImageService {
     public Path buildFilePathAd(Ad ad, String fileName) {
         return Path.of(imageAd, ad.getPk() + "." + getExtension(fileName));
     }
+  
     public Path buildFilePathUser(User user, String fileName) {
         return Path.of(imageUser, user.getId() + "." + getExtension(fileName));
     }
