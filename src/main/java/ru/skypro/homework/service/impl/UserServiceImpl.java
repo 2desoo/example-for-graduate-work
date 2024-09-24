@@ -23,6 +23,8 @@ import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.utils.CheckAuthentication;
 import ru.skypro.homework.utils.MethodLog;
 
+import java.io.IOException;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -88,7 +90,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    public void updateUserImage(MultipartFile image, String userName, Authentication authentication) {
+    public void updateUserImage(MultipartFile image, String userName, Authentication authentication) throws IOException {
         log.info("Использован метод сервиса: {}", MethodLog.getMethodName());
 
         checkAuthentication.checkAuthentication(authentication);
@@ -98,17 +100,16 @@ public class UserServiceImpl implements UserService {
         if (user.getImage() == null) {
             log.info("Пользователь не имеет аватара");
 
-            user.setImage(imageService.addImage(image));
+            imageService.uploadUser(user.getId(), image);
             log.info("Аватар добавлен");
 
             repository.save(user);
             return;
         }
         Long imageId = user.getImage().getId();
-        user.setImage(imageService.addImage(image));
-        log.info("Аватар обновлен");
-
         imageService.deleteImage(imageId);
+        imageService.uploadUser(user.getId(), image);
+
         repository.save(user);
     }
 }

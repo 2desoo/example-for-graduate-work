@@ -46,20 +46,13 @@ public class CommentController {
                                     implementation = CommentsDTO.class
                             ))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content)
     })
     @GetMapping(path = "/{id}/comments")
     public ResponseEntity<CommentsDTO> getComments(@PathVariable Long id,
                                                    Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-
-        try {
-            return ResponseEntity.ok(commentService.getComments(id, authentication));
-        } catch (UnauthorizedException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } catch (ForbiddenException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        return ResponseEntity.ok(commentService.getComments(id, authentication));
     }
 
     @Operation(
@@ -80,15 +73,8 @@ public class CommentController {
                                                     @RequestBody CreateOrUpdateCommentDTO createOrUpdateCommentDTO,
                                                     Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-
-        try {
-            return ResponseEntity.ok(commentService.createComment
-                    (id, createOrUpdateCommentDTO, authentication));
-        } catch (UnauthorizedException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return ResponseEntity.ok(commentService.createComment(id,
+                createOrUpdateCommentDTO, authentication));
     }
 
     @Operation(
@@ -106,17 +92,8 @@ public class CommentController {
                                                   @PathVariable Long commentId,
                                                   Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-
-        try {
-            commentService.removalComment(adId, commentId, authentication);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } catch (UnauthorizedException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } catch (ForbiddenException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        commentService.removalComment(adId, commentId, authentication);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Operation(
@@ -140,15 +117,6 @@ public class CommentController {
                                                   @RequestBody CreateOrUpdateCommentDTO createOrUpdateCommentDTO,
                                                   Authentication authentication) {
         log.info("Использован метод {}", MethodLog.getMethodName());
-
-        try {
-            return ResponseEntity.ok(commentService.editComment(adId, commentId, createOrUpdateCommentDTO, authentication));
-        } catch (UnauthorizedException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } catch (ForbiddenException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return ResponseEntity.ok(commentService.editComment(adId, commentId, createOrUpdateCommentDTO, authentication));
     }
 }

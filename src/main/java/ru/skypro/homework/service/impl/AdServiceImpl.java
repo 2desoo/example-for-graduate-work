@@ -16,6 +16,7 @@ import ru.skypro.homework.entity.Role;
 import ru.skypro.homework.entity.User;
 import ru.skypro.homework.exception.AccessRightsNotAvailableException;
 import ru.skypro.homework.exception.AdNotFoundException;
+import ru.skypro.homework.exception.AdminAccessException;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.service.AdService;
@@ -26,6 +27,8 @@ import ru.skypro.homework.utils.CheckAuthentication;
 import ru.skypro.homework.utils.MethodLog;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -41,9 +44,6 @@ public class AdServiceImpl implements AdService {
     private final ImageService imageService;
     private final CheckAuthentication checkAuthentication;
     private final CheckAdmin checkAdmin;
-
-    @Value("${path.to.photo.folder}")
-    private String photoDir;
 
     @Override
     public AdsDTO getAllAds() {
@@ -64,7 +64,7 @@ public class AdServiceImpl implements AdService {
 
         Ad ad = AdMapper.INSTANCE.createOrUpdateAdDTOToAd(createOrUpdateAdDTO);
         ad.setUser(userService.findByEmail(authentication.getName()));
-        ad.setImage(imageService.addImage(image));
+        imageService.uploadAd(ad.getPk(), image);
         adRepository.save(ad);
 
         uploadImageForAd(ad.getPk().intValue(), image);

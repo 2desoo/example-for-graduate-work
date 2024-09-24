@@ -49,7 +49,6 @@ public interface UserService {
      * @param userName - имя пользователя
      * @param authentication - аутентифицированный пользователь
      */
-    void updateUserImage(MultipartFile image, String userName, Authentication authentication) throws IOException;
 
     /**
      * Поиск пользователя по его email
@@ -57,4 +56,6 @@ public interface UserService {
      * @param login - email зарегистрированного пользователя
      */
     User findByEmail(String login);
+
+    void updateUserImage(MultipartFile image, String userName, Authentication authentication) throws IOException;
 }

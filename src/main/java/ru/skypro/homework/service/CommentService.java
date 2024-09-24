@@ -15,12 +15,12 @@ public interface CommentService {
 
     /**
      * Метод для возращения списка всех комментариев к объявлению
-     *
      * @param id параметр по которому мы идентифицируем для какова объявления нужен список комментариев
      * С помощью {@link ru.skypro.homework.repository.AdRepository#existsById(Object id)}
      * Мы проверяем существует ли это объявления, если такого объявления не существует, срабатывает исключение
      * @return {@link CommentsDTO} список комментариев к объявлению.
-     * @throws ru.skypro.homework.exception.EntityNotFoundException Если объявления существует, то создается List для {@link CommentDTO} где осуществляется поиск комментариев,
+     * @throws ru.skypro.homework.exception.EntityNotFoundException
+     * Если объявления существует, то создается List для {@link CommentDTO} где осуществляется поиск комментариев,
      * которые относятся к объявлению с помощью {@link ru.skypro.homework.repository.CommentRepository#findCommentsByIdAd(Long id)}
      * найденные комментария с помощью {@link ru.skypro.homework.mapper.CommentMapper#commentToCommentDTO(Comment, User)}
      * преобразуется в {@link CommentDTO} и эти DTO уже добавляются в List.
@@ -30,7 +30,6 @@ public interface CommentService {
 
     /**
      * Метод для создания комментария к объявлению
-     *
      * @param adId параметр по которому мы идентифицируем для какова объявления будет писаться комментарий
      * @param comment это {@link CreateOrUpdateCommentDTO} в котором будем принимать текст
      * @param authentication идентифицируем пользователя, который создает комментарий
@@ -58,15 +57,14 @@ public interface CommentService {
 
     /**
      * Метод для изменения комментария.
-     *
      * @param adId параметр по которому мы идентифицируем объявления
      * @param commentId параметр по которому мы идентифицируем
      * @param createOrUpdateCommentDTO это {@link CreateOrUpdateCommentDTO} в котором будем принимать текст
      * С помощью {@link ru.skypro.homework.repository.CommentRepository#existsById(Object)}
      * Мы проверяем существует ли этот комментарий, если такого комментария не существует то, срабатывает исключение
      * @return {@link CommentDTO} используя {@link ru.skypro.homework.mapper.CommentMapper#commentDTOToComment(CommentDTO)}
-     * @throws ru.skypro.homework.exception.EntityNotFoundException используя метод {@link ru.skypro.homework.service.impl.CommentServiceImpl#getComment(Long)} мы находим комментарий,
-     * который будем изменять.
+     * @throws ru.skypro.homework.exception.EntityNotFoundException используя метод {@link ru.skypro.homework.service.impl.CommentServiceImpl#getComment(Long)}
+     * мы находим комментарий, который будем изменять.
      * С помощью {@link ru.skypro.homework.repository.CommentRepository#save(Object)} сохраняем измененный комментарий
      */
     CommentDTO editComment(Long adId, Long commentId, CreateOrUpdateCommentDTO createOrUpdateCommentDTO, Authentication authentication);
